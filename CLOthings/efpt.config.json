@@ -1,0 +1,206 @@
+﻿{
+   "CodeGenerationMode": 6,
+   "ContextClassName": "CLOthingsContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1604",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "CLOthings",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[cart]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[community_post]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[coupon]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[customer_favorites]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[customer_service]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_cart]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_customer_favorites]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_customer_service]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_discount_standards]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_order_detail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_orders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_payment_methods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_product]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_product_specification]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_products_categories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_seller_statistics]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_shipper]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[group_supplier]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[invoices]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[order_detail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[orders]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[payment_methods]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[post_comments]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[post_images]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[post_likes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[post_tagged_products]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[product]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[product_img]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[product_specification]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[products_categories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[reviews]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[seller_statistics]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[shipper]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[supplier]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_addresses]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_follows]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_oauth]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[user_profiles]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false,
+   "UseTypedTvpParameters": true
+}
