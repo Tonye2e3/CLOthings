@@ -6,6 +6,8 @@ namespace CLOthings.Controllers
     {
         public IActionResult Index()
         {
+            int id = 0;
+            Console.WriteLine(id);
             return View();
         }
     }
