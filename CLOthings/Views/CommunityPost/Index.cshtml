@@ -13,27 +13,35 @@
 <table class="table table-striped table-hover align-middle">
     <thead>
         <tr>
-            <th>
+            <th style="white-space: nowrap;">
                 @Html.DisplayNameFor(model => model.UserId)
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 @Html.DisplayNameFor(model => model.Content)
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 @Html.DisplayNameFor(model => model.PostDate)
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 @Html.DisplayNameFor(model => model.Status)
             </th>
             <!-- 貼文圖片表頭 -->
-            <th>
+            <th style="white-space: nowrap;">
                 貼文圖片
             </th>
+            <!-- 按讚數表頭 -->
+            <th style="white-space: nowrap;">
+                按讚數
+            </th>
+            <!-- 留言數表頭 -->
+            <th style="white-space: nowrap;">
+                留言數
+            </th>
             <!-- 標籤商品表頭 -->
-            <th>
+            <th style="white-space: nowrap;">
                 標籤商品
             </th>
-            <th>動作</th>
+            <th style ="white-space: nowrap;">動作</th>
         </tr>
     </thead>
     <tbody>
@@ -74,8 +82,16 @@
                         <span class="text-muted small">無圖片</span>
                     }
                 </td>
+                <!-- 2. 呈現按讚數 -->
+                <td>
+                    ❤️ @(item.PostLikes != null ? item.PostLikes.Count : 0)
+                </td>
+                <!-- 3. 呈現留言數 -->
+                <td>
+                    💬 @(item.PostComments != null ? item.PostComments.Count : 0)
+                </td>
 
-                <!-- 2. 呈現標籤商品 (如果有 Include 抓資料的話) -->
+                <!-- 4. 呈現標籤商品 (如果有 Include 抓資料的話) -->
                 <td>
                     @if (item.PostTaggedProducts != null && item.PostTaggedProducts.Any())
                     {

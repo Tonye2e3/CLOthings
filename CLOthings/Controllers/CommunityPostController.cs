@@ -21,6 +21,8 @@ public class CommunityPostController : Controller
             .Include(p => p.PostImages)          // 必須加上這行才能拿到圖片路徑！
             .Include(p => p.PostTaggedProducts)
                 .ThenInclude(tp => tp.Product) //  順便把商品名稱載入進來
+            .Include(p => p.PostLikes)          // 新增這行：載入按讚資料
+            .Include(p => p.PostComments)       // 新增這行：載入留言資料
             .ToListAsync();
 
         return View(posts);
