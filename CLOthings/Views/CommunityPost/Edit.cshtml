@@ -1,0 +1,74 @@
+@model CLOthings.Models.CommunityPost
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>CommunityPost</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="CommunityPostId" />
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <input asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <input asp-for="Content" class="form-control" />
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostDate" class="control-label"></label>
+                <input asp-for="PostDate" class="form-control" />
+                <span asp-validation-for="PostDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostComments" class="control-label"></label>
+                <input asp-for="PostComments" class="form-control" />
+                <span asp-validation-for="PostComments" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostImages" class="control-label"></label>
+                <input asp-for="PostImages" class="form-control" />
+                <span asp-validation-for="PostImages" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostLikes" class="control-label"></label>
+                <input asp-for="PostLikes" class="form-control" />
+                <span asp-validation-for="PostLikes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostTaggedProducts" class="control-label"></label>
+                <input asp-for="PostTaggedProducts" class="form-control" />
+                <span asp-validation-for="PostTaggedProducts" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User" class="control-label"></label>
+                <input asp-for="User" class="form-control" />
+                <span asp-validation-for="User" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
