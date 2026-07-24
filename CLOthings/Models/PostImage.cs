@@ -7,13 +7,13 @@ namespace CLOthings.Models;
 
 public partial class PostImage
 {
-    public int ImageId { get; set; }
+    public int PostImageId { get; set; }
 
-    public int PostId { get; set; }
+    public int CommunityPostId { get; set; }
 
     public string ImageFileName { get; set; }
 
     public int SortOrder { get; set; }
 
-    public virtual CommunityPost Post { get; set; }
+    public virtual CommunityPost CommunityPost { get; set; }
 }

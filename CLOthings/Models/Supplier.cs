@@ -17,6 +17,8 @@ public partial class Supplier
 
     public string ContactEmail { get; set; }
 
+    public string Address { get; set; }
+
     public string Phone { get; set; }
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();

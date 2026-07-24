@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class GroupSupplier
 {
-    public int SupplierId { get; set; }
+    public int GroupSupplierId { get; set; }
 
     public string SupplierName { get; set; }
 

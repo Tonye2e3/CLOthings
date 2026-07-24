@@ -7,11 +7,11 @@ namespace CLOthings.Models;
 
 public partial class PostComment
 {
-    public int CommentId { get; set; }
+    public int PostCommentId { get; set; }
 
     public int? ParentCommentId { get; set; }
 
-    public int PostId { get; set; }
+    public int CommunityPostId { get; set; }
 
     public int UserId { get; set; }
 
@@ -19,11 +19,11 @@ public partial class PostComment
 
     public DateTime CommentDate { get; set; }
 
+    public virtual CommunityPost CommunityPost { get; set; }
+
     public virtual ICollection<PostComment> InverseParentComment { get; set; } = new List<PostComment>();
 
     public virtual PostComment ParentComment { get; set; }
-
-    public virtual CommunityPost Post { get; set; }
 
     public virtual User User { get; set; }
 }

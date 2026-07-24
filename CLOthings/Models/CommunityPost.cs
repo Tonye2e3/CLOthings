@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class CommunityPost
 {
-    public int PostId { get; set; }
+    public int CommunityPostId { get; set; }
 
     public int UserId { get; set; }
 

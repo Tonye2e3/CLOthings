@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace CLOthings.Models;
 
-public partial class GroupProductsCategory
+public partial class GroupProductCategory
 {
-    public int CategoryId { get; set; }
+    public int GroupProductCategoryId { get; set; }
 
     public string CategoryName { get; set; }
 

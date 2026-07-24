@@ -7,19 +7,21 @@ namespace CLOthings.Models;
 
 public partial class GroupCart
 {
-    public int CartItemId { get; set; }
+    public int GroupCartId { get; set; }
 
-    public string CartId { get; set; }
+    public int UserId { get; set; }
 
-    public int ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
-    public int SpecificationId { get; set; }
+    public int GroupProductSpecificationId { get; set; }
 
     public int Quantity { get; set; }
 
     public DateTime AddDate { get; set; }
 
-    public virtual GroupProduct Product { get; set; }
+    public virtual GroupProduct GroupProduct { get; set; }
 
-    public virtual GroupProductSpecification Specification { get; set; }
+    public virtual GroupProductSpecification GroupProductSpecification { get; set; }
+
+    public virtual User User { get; set; }
 }

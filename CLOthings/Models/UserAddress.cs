@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class UserAddress
 {
-    public int AddressId { get; set; }
+    public int UserAddressId { get; set; }
 
     public int UserId { get; set; }
 

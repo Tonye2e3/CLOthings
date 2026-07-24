@@ -13,7 +13,7 @@ public partial class Product
 
     public int SupplierId { get; set; }
 
-    public int CategoryId { get; set; }
+    public int ProductCategoryId { get; set; }
 
     public string Description { get; set; }
 
@@ -25,9 +25,11 @@ public partial class Product
 
     public DateTime? SalesEndDate { get; set; }
 
-    public virtual ProductsCategory Category { get; set; }
-
     public virtual ICollection<CustomerFavorite> CustomerFavorites { get; set; } = new List<CustomerFavorite>();
+
+    public virtual ICollection<PostTaggedProduct> PostTaggedProducts { get; set; } = new List<PostTaggedProduct>();
+
+    public virtual ProductCategory ProductCategory { get; set; }
 
     public virtual ICollection<ProductImg> ProductImgs { get; set; } = new List<ProductImg>();
 

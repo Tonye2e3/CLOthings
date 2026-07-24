@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class ProductSpecification
 {
-    public int SpecificationId { get; set; }
+    public int ProductSpecificationId { get; set; }
 
     public int ProductId { get; set; }
 

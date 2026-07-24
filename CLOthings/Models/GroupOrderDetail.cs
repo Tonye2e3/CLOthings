@@ -7,13 +7,13 @@ namespace CLOthings.Models;
 
 public partial class GroupOrderDetail
 {
-    public int OrderDetailId { get; set; }
+    public int GroupOrderDetailId { get; set; }
 
-    public int ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
-    public string SpecificationId { get; set; }
+    public int GroupProductSpecificationId { get; set; }
 
-    public int OrderId { get; set; }
+    public int GroupOrderId { get; set; }
 
     public int Quantity { get; set; }
 
@@ -21,7 +21,9 @@ public partial class GroupOrderDetail
 
     public decimal? Discount { get; set; }
 
-    public virtual GroupOrder Order { get; set; }
+    public virtual GroupOrder GroupOrder { get; set; }
 
-    public virtual GroupProduct Product { get; set; }
+    public virtual GroupProduct GroupProduct { get; set; }
+
+    public virtual GroupProductSpecification GroupProductSpecification { get; set; }
 }

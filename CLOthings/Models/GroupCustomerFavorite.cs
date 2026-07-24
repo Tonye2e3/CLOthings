@@ -7,11 +7,15 @@ namespace CLOthings.Models;
 
 public partial class GroupCustomerFavorite
 {
-    public int FavoriteId { get; set; }
+    public int GroupCustomerFavoriteId { get; set; }
 
-    public string UserId { get; set; }
+    public int UserId { get; set; }
 
-    public string ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
     public DateTime AddDate { get; set; }
+
+    public virtual GroupProduct GroupProduct { get; set; }
+
+    public virtual User User { get; set; }
 }

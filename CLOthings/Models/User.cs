@@ -39,6 +39,14 @@ public partial class User
 
     public virtual ICollection<CustomerFavorite> CustomerFavorites { get; set; } = new List<CustomerFavorite>();
 
+    public virtual ICollection<GroupCart> GroupCarts { get; set; } = new List<GroupCart>();
+
+    public virtual ICollection<GroupCustomerFavorite> GroupCustomerFavorites { get; set; } = new List<GroupCustomerFavorite>();
+
+    public virtual ICollection<GroupOrder> GroupOrders { get; set; } = new List<GroupOrder>();
+
+    public virtual ICollection<GroupPaymentMethod> GroupPaymentMethods { get; set; } = new List<GroupPaymentMethod>();
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<PaymentMethod> PaymentMethods { get; set; } = new List<PaymentMethod>();

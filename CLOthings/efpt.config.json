@@ -19,159 +19,159 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "[dbo].[cart]",
+         "Name": "[dbo].[Cart]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[community_post]",
+         "Name": "[dbo].[CommunityPost]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[coupon]",
+         "Name": "[dbo].[Coupon]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[customer_favorites]",
+         "Name": "[dbo].[CustomerFavorite]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[customer_service]",
+         "Name": "[dbo].[CustomerService]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_cart]",
+         "Name": "[dbo].[GroupCart]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_customer_favorites]",
+         "Name": "[dbo].[GroupCustomerFavorite]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_customer_service]",
+         "Name": "[dbo].[GroupCustomerService]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_discount_standards]",
+         "Name": "[dbo].[GroupDiscountStandard]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_order_detail]",
+         "Name": "[dbo].[GroupOrder]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_orders]",
+         "Name": "[dbo].[GroupOrderDetail]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_payment_methods]",
+         "Name": "[dbo].[GroupPaymentMethod]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_product]",
+         "Name": "[dbo].[GroupProduct]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_product_specification]",
+         "Name": "[dbo].[GroupProductCategory]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_products_categories]",
+         "Name": "[dbo].[GroupProductSpecification]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_seller_statistics]",
+         "Name": "[dbo].[GroupSellerStatistic]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_shipper]",
+         "Name": "[dbo].[GroupShipper]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[group_supplier]",
+         "Name": "[dbo].[GroupSupplier]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[invoices]",
+         "Name": "[dbo].[Invoice]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[order_detail]",
+         "Name": "[dbo].[Order]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[orders]",
+         "Name": "[dbo].[OrderDetail]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[payment_methods]",
+         "Name": "[dbo].[PaymentMethod]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[post_comments]",
+         "Name": "[dbo].[PostComment]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[post_images]",
+         "Name": "[dbo].[PostImage]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[post_likes]",
+         "Name": "[dbo].[PostLike]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[post_tagged_products]",
+         "Name": "[dbo].[PostTaggedProduct]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[product]",
+         "Name": "[dbo].[Product]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[product_img]",
+         "Name": "[dbo].[ProductCategory]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[product_specification]",
+         "Name": "[dbo].[ProductImg]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[products_categories]",
+         "Name": "[dbo].[ProductSpecification]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[reviews]",
+         "Name": "[dbo].[Review]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[seller_statistics]",
+         "Name": "[dbo].[SellerStatistic]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[shipper]",
+         "Name": "[dbo].[Shipper]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[supplier]",
+         "Name": "[dbo].[Supplier]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[user]",
+         "Name": "[dbo].[User]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[user_addresses]",
+         "Name": "[dbo].[UserAddress]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[user_follows]",
+         "Name": "[dbo].[UserFollow]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[user_oauth]",
+         "Name": "[dbo].[UserOAuth]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[user_profiles]",
+         "Name": "[dbo].[UserProfile]",
          "ObjectType": 0
       }
    ],

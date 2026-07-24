@@ -7,11 +7,9 @@ namespace CLOthings.Models;
 
 public partial class GroupOrder
 {
-    public int OrderId { get; set; }
+    public int GroupOrderId { get; set; }
 
-    public string CustomerId { get; set; }
-
-    public string EmployeeId { get; set; }
+    public int UserId { get; set; }
 
     public string Status { get; set; }
 
@@ -21,7 +19,7 @@ public partial class GroupOrder
 
     public DateTime? ShipperDate { get; set; }
 
-    public int? ShipperId { get; set; }
+    public int? GroupShipperId { get; set; }
 
     public string PickupMethod { get; set; }
 
@@ -39,7 +37,9 @@ public partial class GroupOrder
 
     public virtual ICollection<GroupOrderDetail> GroupOrderDetails { get; set; } = new List<GroupOrderDetail>();
 
+    public virtual GroupShipper GroupShipper { get; set; }
+
     public virtual GroupPaymentMethod PaymentMethod { get; set; }
 
-    public virtual GroupShipper Shipper { get; set; }
+    public virtual User User { get; set; }
 }

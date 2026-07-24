@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class UserOauth
 {
-    public int OauthId { get; set; }
+    public int UserOauthId { get; set; }
 
     public int UserId { get; set; }
 

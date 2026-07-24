@@ -7,13 +7,15 @@ namespace CLOthings.Models;
 
 public partial class PostTaggedProduct
 {
-    public int TaggedId { get; set; }
+    public int PostTaggedProductId { get; set; }
 
-    public int PostId { get; set; }
+    public int CommunityPostId { get; set; }
 
     public int ProductId { get; set; }
 
     public string ProductRoute { get; set; }
 
-    public virtual CommunityPost Post { get; set; }
+    public virtual CommunityPost CommunityPost { get; set; }
+
+    public virtual Product Product { get; set; }
 }

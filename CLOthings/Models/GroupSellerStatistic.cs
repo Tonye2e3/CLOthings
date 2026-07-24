@@ -7,11 +7,11 @@ namespace CLOthings.Models;
 
 public partial class GroupSellerStatistic
 {
-    public int StatisticsId { get; set; }
+    public int GroupSellerStatisticsId { get; set; }
 
-    public int SupplierId { get; set; }
+    public int GroupSupplierId { get; set; }
 
-    public int ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
     public int? AddCartCount { get; set; }
 
@@ -23,7 +23,7 @@ public partial class GroupSellerStatistic
 
     public DateTime StatisticDate { get; set; }
 
-    public virtual GroupProduct Product { get; set; }
+    public virtual GroupProduct GroupProduct { get; set; }
 
-    public virtual GroupSupplier Supplier { get; set; }
+    public virtual GroupSupplier GroupSupplier { get; set; }
 }

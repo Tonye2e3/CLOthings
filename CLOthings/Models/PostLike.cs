@@ -9,13 +9,13 @@ public partial class PostLike
 {
     public int PostLikesId { get; set; }
 
-    public int PostId { get; set; }
+    public int CommunityPostId { get; set; }
 
     public int UserId { get; set; }
 
     public DateTime LikeDate { get; set; }
 
-    public virtual CommunityPost Post { get; set; }
+    public virtual CommunityPost CommunityPost { get; set; }
 
     public virtual User User { get; set; }
 }

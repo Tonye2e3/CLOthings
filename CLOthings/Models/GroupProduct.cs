@@ -7,13 +7,13 @@ namespace CLOthings.Models;
 
 public partial class GroupProduct
 {
-    public int ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
     public string ProductName { get; set; }
 
-    public int SupplierId { get; set; }
+    public int GroupSupplierId { get; set; }
 
-    public int CategoryId { get; set; }
+    public int GroupProductCategoryId { get; set; }
 
     public string Description { get; set; }
 
@@ -27,17 +27,19 @@ public partial class GroupProduct
 
     public string ProductImg { get; set; }
 
-    public virtual GroupProductsCategory Category { get; set; }
-
     public virtual ICollection<GroupCart> GroupCarts { get; set; } = new List<GroupCart>();
+
+    public virtual ICollection<GroupCustomerFavorite> GroupCustomerFavorites { get; set; } = new List<GroupCustomerFavorite>();
 
     public virtual ICollection<GroupDiscountStandard> GroupDiscountStandards { get; set; } = new List<GroupDiscountStandard>();
 
     public virtual ICollection<GroupOrderDetail> GroupOrderDetails { get; set; } = new List<GroupOrderDetail>();
 
+    public virtual GroupProductCategory GroupProductCategory { get; set; }
+
     public virtual ICollection<GroupProductSpecification> GroupProductSpecifications { get; set; } = new List<GroupProductSpecification>();
 
     public virtual ICollection<GroupSellerStatistic> GroupSellerStatistics { get; set; } = new List<GroupSellerStatistic>();
 
-    public virtual GroupSupplier Supplier { get; set; }
+    public virtual GroupSupplier GroupSupplier { get; set; }
 }

@@ -7,9 +7,9 @@ namespace CLOthings.Models;
 
 public partial class GroupProductSpecification
 {
-    public int SpecificationId { get; set; }
+    public int GroupProductSpecificationId { get; set; }
 
-    public int ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
     public string Size { get; set; }
 
@@ -17,5 +17,7 @@ public partial class GroupProductSpecification
 
     public virtual ICollection<GroupCart> GroupCarts { get; set; } = new List<GroupCart>();
 
-    public virtual GroupProduct Product { get; set; }
+    public virtual ICollection<GroupOrderDetail> GroupOrderDetails { get; set; } = new List<GroupOrderDetail>();
+
+    public virtual GroupProduct GroupProduct { get; set; }
 }

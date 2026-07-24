@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class UserProfile
 {
-    public int ProfileId { get; set; }
+    public int UserProfileId { get; set; }
 
     public int UserId { get; set; }
 

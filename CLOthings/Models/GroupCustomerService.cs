@@ -7,9 +7,9 @@ namespace CLOthings.Models;
 
 public partial class GroupCustomerService
 {
-    public int CustomerServiceId { get; set; }
+    public int GroupCustomerServiceId { get; set; }
 
-    public int OrderId { get; set; }
+    public int GroupOrderId { get; set; }
 
     public string Name { get; set; }
 
@@ -21,5 +21,5 @@ public partial class GroupCustomerService
 
     public string Title { get; set; }
 
-    public virtual GroupOrder Order { get; set; }
+    public virtual GroupOrder GroupOrder { get; set; }
 }

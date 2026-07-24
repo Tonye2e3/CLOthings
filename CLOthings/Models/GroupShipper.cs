@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class GroupShipper
 {
-    public int ShipperId { get; set; }
+    public int GroupShipperId { get; set; }
 
     public string ShipperName { get; set; }
 

@@ -7,9 +7,9 @@ namespace CLOthings.Models;
 
 public partial class GroupPaymentMethod
 {
-    public int PaymentMethodId { get; set; }
+    public int GroupPaymentMethodId { get; set; }
 
-    public string UserId { get; set; }
+    public int UserId { get; set; }
 
     public string Provider { get; set; }
 
@@ -22,4 +22,6 @@ public partial class GroupPaymentMethod
     public bool IsDefault { get; set; }
 
     public virtual ICollection<GroupOrder> GroupOrders { get; set; } = new List<GroupOrder>();
+
+    public virtual User User { get; set; }
 }

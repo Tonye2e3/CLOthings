@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class SellerStatistic
 {
-    public int StatisticsId { get; set; }
+    public int SellerStatisticsId { get; set; }
 
     public int ProductId { get; set; }
 

@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class Order
 {
-    public int OrdersId { get; set; }
+    public int OrderId { get; set; }
 
     public int UserId { get; set; }
 
@@ -27,7 +27,7 @@ public partial class Order
 
     public decimal Freight { get; set; }
 
-    public int InvoiceId { get; set; }
+    public int? InvoiceId { get; set; }
 
     public int PaymentMethodId { get; set; }
 

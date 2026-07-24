@@ -9,7 +9,7 @@ public partial class OrderDetail
 {
     public int OrderDetailId { get; set; }
 
-    public int SpecificationId { get; set; }
+    public int ProductSpecificationId { get; set; }
 
     public int OrderId { get; set; }
 
@@ -25,7 +25,7 @@ public partial class OrderDetail
 
     public virtual Order Order { get; set; }
 
-    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public virtual ProductSpecification ProductSpecification { get; set; }
 
-    public virtual ProductSpecification Specification { get; set; }
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

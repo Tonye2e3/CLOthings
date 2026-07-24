@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class CustomerFavorite
 {
-    public int FavoriteId { get; set; }
+    public int CustomerFavoriteId { get; set; }
 
     public int UserId { get; set; }
 

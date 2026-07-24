@@ -7,9 +7,9 @@ namespace CLOthings.Models;
 
 public partial class GroupDiscountStandard
 {
-    public int TierId { get; set; }
+    public int GroupDiscountStandardId { get; set; }
 
-    public int ProductId { get; set; }
+    public int GroupProductId { get; set; }
 
     public string TierLevel { get; set; }
 
@@ -19,5 +19,5 @@ public partial class GroupDiscountStandard
 
     public decimal? DiscountRate { get; set; }
 
-    public virtual GroupProduct Product { get; set; }
+    public virtual GroupProduct GroupProduct { get; set; }
 }

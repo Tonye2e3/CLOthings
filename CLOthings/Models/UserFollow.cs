@@ -7,7 +7,7 @@ namespace CLOthings.Models;
 
 public partial class UserFollow
 {
-    public int FollowId { get; set; }
+    public int UserFollowId { get; set; }
 
     public int FollowerId { get; set; }
 

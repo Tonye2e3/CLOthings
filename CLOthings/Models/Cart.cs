@@ -11,11 +11,11 @@ public partial class Cart
 
     public int UserId { get; set; }
 
-    public int SpecificationId { get; set; }
+    public int ProductSpecificationId { get; set; }
 
     public int Quantity { get; set; }
 
-    public virtual ProductSpecification Specification { get; set; }
+    public virtual ProductSpecification ProductSpecification { get; set; }
 
     public virtual User User { get; set; }
 }
