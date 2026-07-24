@@ -83,24 +83,29 @@ public class CommunityPostController : Controller
                 {
                     if (file.Length > 0)
                     {
-                        // 建立檔名與儲存路徑
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/posts", fileName);
+                        // 產生不重複的檔名
+                        var fileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
 
+                        // 2. 指定實體儲存路徑
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/posts", fileName);
+
+                        // 3. 把圖片存進 wwwroot 資料夾
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
 
-                        // 存入 PostImages 資料表
+                        // 4. 寫入資料庫路徑
                         var postImage = new PostImage
                         {
-                            CommunityPostId = communitypost.CommunityPostId,
-                            ImageFileName = "/uploads/posts/" + fileName
+                            CommunityPostId = communitypost.CommunityPostId, 
+                            ImageFileName = "/images/posts/" + fileName,
+                            SortOrder = 1
                         };
                         _context.PostImages.Add(postImage);
                     }
                 }
+                
             }
 
             // 3. 處理標籤商品 (PostTaggedProducts)
