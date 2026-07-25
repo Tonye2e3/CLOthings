@@ -4,77 +4,118 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">📌 貼文詳情</h4>
+            <span class="badge bg-light text-dark">ID: @Model.CommunityPostId</span>
+        </div>
+        <div class="card-body">
 
-<div>
-    <h4>CommunityPost</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostComments)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostComments)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostImages)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostImages)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostLikes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostLikes)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PostTaggedProducts)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PostTaggedProducts)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.CommunityPostId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <!-- 發布資訊與狀態 -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <div>
+                    <strong>發布使用者：</strong>
+                    <span class="text-primary fw-bold">@(Model.User?.Username ?? Model.UserId.ToString())</span>
+                </div>
+                <div>
+                    <span class="text-muted me-2">@Model.PostDate.ToString("yyyy/MM/dd HH:mm")</span>
+                    <span class="badge bg-success">@Model.Status</span>
+                </div>
+            </div>
+
+            <!-- 貼文內文 -->
+            <div class="mb-4">
+                <h5 class="fw-bold">貼文內容</h5>
+                <div class="p-3 bg-light rounded text-break" style="white-space: pre-line;">
+                    @Model.Content
+                </div>
+            </div>
+
+            <!-- 貼文圖片展示區 -->
+            <div class="mb-4">
+                <h5 class="fw-bold">貼文圖片</h5>
+                @if (Model.PostImages != null && Model.PostImages.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        @foreach (var img in Model.PostImages)
+                        {
+                            <a href="@img.ImageFileName" target="_blank">
+                                <img src="@img.ImageFileName" class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" alt="貼文照片" />
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">（此貼文無圖片）</p>
+                }
+            </div>
+
+            <!-- 標籤商品展示區 -->
+            <div class="mb-4">
+                <h5 class="fw-bold">標籤商品</h5>
+                @if (Model.PostTaggedProducts != null && Model.PostTaggedProducts.Any())
+                {
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        @foreach (var tag in Model.PostTaggedProducts)
+                        {
+                            if (tag.Product != null)
+                            {
+                                <span class="badge bg-info text-dark p-2" style="font-size: 14px;">
+                                    🏷️ @tag.Product.ProductName
+                                </span>
+                            }
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">（未標籤任何商品）</p>
+                }
+            </div>
+            <!-- 貼文留言展示區 -->
+            <div class="mb-4">
+                <h5 class="fw-bold">💬 貼文留言 (@(Model.PostComments?.Count ?? 0))</h5>
+                @if (Model.PostComments != null && Model.PostComments.Any())
+                {
+                    <div class="list-group mt-2">
+                        @foreach (var comment in Model.PostComments)
+                        {
+                            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <h6 class="mb-1 text-primary fw-bold">
+                                        👤 @(comment.User?.Username ?? $"使用者 ID: {comment.UserId}")
+                                    </h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <small class="text-muted me-2">@comment.CommentDate.ToString("yyyy/MM/dd HH:mm")</small>
+                                        <!-- 刪除違規留言按鈕 -->
+                                        <form asp-action="DeleteComment" method="post" onsubmit="return confirm('確定要刪除這筆違規留言嗎？');" style="display:inline;">
+                                            <input type="hidden" name="commentId" value="@comment.PostCommentId" />
+                                            <input type="hidden" name="postId" value="@Model.CommunityPostId" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2">
+                                                🗑️ 刪除
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <p class="mb-1 text-secondary mt-2">@comment.CommentText</p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">（目前尚無留言）</p>
+                }
+            </div>
+
+            <!-- 操作按鈕區 -->
+            <div class="pt-3 border-top d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.CommunityPostId" class="btn btn-warning">編輯貼文</a>
+                <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+            </div>
+
+        </div>
+    </div>
 </div>

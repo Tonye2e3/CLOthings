@@ -14,16 +14,39 @@ public class CommunityPostController : Controller
 
     // GET: COMMUNITYPOSTS
     // GET: CommunityPost
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1)
     {
-        // 使用 .Include() 將圖片與標籤商品關聯資料一起撈出來
-        var posts = await _context.CommunityPosts 
-            .Include(p => p.PostImages)          // 必須加上這行才能拿到圖片路徑！
-            .Include(p => p.PostTaggedProducts)
-                .ThenInclude(tp => tp.Product) //  順便把商品名稱載入進來
-            .Include(p => p.PostLikes)          // 新增這行：載入按讚資料
-            .Include(p => p.PostComments)       // 新增這行：載入留言資料
+        int pageSize = 5; // 每頁顯示 5 筆資料 (可自由改成 10)
+
+        // 1. 建立 basic Query，包含你需要顯示的標籤商品
+        // 2. 加上 AsNoTracking() 讓 EF Core 不用花資源追蹤物件變更，大幅提升載入速度
+        var query = _context.CommunityPosts
+            .Include(p => p.User)
+            .Include(p => p.PostImages)
+            .Include(p => p.PostLikes)
+            .Include(p => p.PostComments)
+            .Include(p => p.PostTaggedProducts!)
+                .ThenInclude(tp => tp.Product)       
+            .AsNoTracking()
+            .OrderByDescending(p => p.PostDate); // 讓最新貼文排在最前面
+
+        // 2. 計算總筆數與總頁數
+        int totalItems = await query.CountAsync();
+        int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        // 確保頁數不超出範圍
+        page = Math.Max(1, Math.Min(page, totalPages > 0 ? totalPages : 1));
+
+        // 3. 使用 Skip 和 Take 只從資料庫抓取當前頁面的資料
+        var posts = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        // 傳送分頁資訊給 View
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.TotalItems = totalItems;
 
         return View(posts);
     }
@@ -37,6 +60,13 @@ public class CommunityPostController : Controller
         }
 
         var communitypost = await _context.CommunityPosts
+            .Include(c => c.User)
+            .Include(c => c.PostImages)
+            .Include(c => c.PostTaggedProducts!)
+                .ThenInclude(tp => tp.Product)
+                .Include(c => c.PostComments!) // 👈 加上這行載入留言
+                .ThenInclude(comment => comment.User) // 👈 若留言有關聯 User 也可以順便載入留言者
+            .AsNoTracking()
             .FirstOrDefaultAsync(m => m.CommunityPostId == id);
         if (communitypost == null)
         {
@@ -345,6 +375,22 @@ public class CommunityPostController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    // POST: CommunityPosts/DeleteComment/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteComment(int commentId, int postId)
+    {
+        var comment = await _context.PostComments.FindAsync(commentId);
+        if (comment != null)
+        {
+            _context.PostComments.Remove(comment);
+            await _context.SaveChangesAsync();
+        }
+
+        // 刪除後重定向回原本貼文的 Details 頁面
+        return RedirectToAction(nameof(Details), new { id = postId });
     }
 
     private bool CommunityPostExists(int? id)

@@ -121,6 +121,37 @@
         }
     </tbody>
 </table>
+<!-- 分頁控制項 -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="text-muted">
+        共 @ViewBag.TotalItems 筆貼文 (第 @ViewBag.CurrentPage / @ViewBag.TotalPages 頁)
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination mb-0">
+                <!-- 上一頁 -->
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-page-link page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)">上一頁</a>
+                </li>
+
+                <!-- 頁碼按鈕 -->
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                    </li>
+                }
+
+                <!-- 下一頁 -->
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)">下一頁</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
 <!-- 在表格下方顯示總筆數 -->
 <div class="mt-3 text-end text-muted fw-bold">
     共 @Model.Count() 筆貼文
