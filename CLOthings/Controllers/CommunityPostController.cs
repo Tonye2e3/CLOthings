@@ -308,10 +308,42 @@ public class CommunityPostController : Controller
         var communitypost = await _context.CommunityPosts.FindAsync(id);
         if (communitypost != null)
         {
+
+            // 1. 先清除標籤商品關聯資料
+            var taggedProducts = _context.PostTaggedProducts.Where(p => p.CommunityPostId == id);
+            _context.PostTaggedProducts.RemoveRange(taggedProducts);
+
+            // 2. 清除相關圖片紀錄，並刪除 wwwroot 裡的實體圖檔
+            var images = _context.PostImages.Where(img => img.CommunityPostId == id).ToList();
+            foreach (var img in images)
+            {
+                if (!string.IsNullOrEmpty(img.ImageFileName))
+                {
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", img.ImageFileName.TrimStart('/'));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+            }
+            _context.PostImages.RemoveRange(images);
+
+            // 3. 清除相關留言（若專案有此資料表可取消註解）
+            var comments = _context.PostComments.Where(c => c.CommunityPostId == id);
+            _context.PostComments.RemoveRange(comments);
+
+            // 4. 清除相關按讚（若專案有此資料表可取消註解）
+            var likes = _context.PostLikes.Where(l => l.CommunityPostId == id);
+            _context.PostLikes.RemoveRange(likes);
+
+
+            // 5. 最後刪除貼文主體
             _context.CommunityPosts.Remove(communitypost);
+
+            // 6. 寫入資料庫變更
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
