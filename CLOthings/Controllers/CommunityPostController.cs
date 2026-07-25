@@ -141,12 +141,18 @@ public class CommunityPostController : Controller
             return NotFound();
         }
 
-        var communitypost = await _context.CommunityPosts.FindAsync(id);
-        if (communitypost == null)
+        // 1. 關鍵！加上 .Include() 將圖片與標籤商品撈出來
+        var communityPost = await _context.CommunityPosts
+                .Include(p => p.PostImages)
+                .Include(p => p.PostTaggedProducts)
+                .FirstOrDefaultAsync(m => m.CommunityPostId == id); if (communityPost == null)
         {
             return NotFound();
         }
-        return View(communitypost);
+
+        // 2. 關鍵！撈出所有商品清單傳給 View，這樣標籤商品區才會有核取方塊 (Checkbox) 可以勾選
+        ViewBag.ProductList = await _context.Products!.ToListAsync();
+        return View(communityPost);
     }
 
     // POST: COMMUNITYPOSTS/Edit/5
@@ -154,7 +160,8 @@ public class CommunityPostController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("CommunityPostId,UserId,Content,Status")] CommunityPost communitypost)
+    public async Task<IActionResult> Edit(int id, [Bind("CommunityPostId,UserId,Content,Status,PostDate")] CommunityPost communitypost, int[]? selectedProductIds, List<IFormFile>? imageFiles,
+    int[]? deleteImageIds)
     {
         if (id != communitypost.CommunityPostId)
         {
@@ -165,8 +172,95 @@ public class CommunityPostController : Controller
         {
             try
             {
-                // 注意：若不想覆蓋原有的 PostDate，可以只更新特定欄位，或先從 DB 撈出實體再更新
+                // 1. 解決日期溢位問題：若傳進來的 PostDate 為預設值 0001/01/01，則預設賦予目前時間
+                if (communitypost.PostDate == default(DateTime))
+                {
+                    communitypost.PostDate = DateTime.Now;
+                }
+
+                // 2. 更新貼文主體基本資料
                 _context.Update(communitypost);
+
+                // 3. 更新「標籤商品」關聯資料
+                // 先抓出該貼文現有的標籤商品
+                var existingTags = _context.PostTaggedProducts.Where(p => p.CommunityPostId == id);
+                _context.PostTaggedProducts.RemoveRange(existingTags); // 先清空舊標籤
+
+                // 如果使用者有勾選新的商品，再重新建立關聯
+                if (selectedProductIds != null && selectedProductIds.Length > 0)
+                {
+                    foreach (var productId in selectedProductIds)
+                    {
+                        _context.PostTaggedProducts.Add(new PostTaggedProduct
+                        {
+                            CommunityPostId = id,
+                            ProductId = productId
+                        });
+                    }
+                }
+                // --- 4. 處理刪除勾選的圖片 (新增這段) ---
+                if (deleteImageIds != null && deleteImageIds.Length > 0)
+                {
+                    // 抓出要刪除的圖片紀錄
+                    var imagesToDelete = await _context.PostImages
+                        .Where(img => deleteImageIds.Contains(img.PostImageId))
+                        .ToListAsync();
+
+                    if (imagesToDelete.Any())
+                    {
+                        // 從資料庫刪除紀錄
+                        _context.PostImages.RemoveRange(imagesToDelete);
+
+                        // (可選) 順便刪除 wwwroot 裡的實體檔案，避免產生垃圾檔案：
+                        foreach (var img in imagesToDelete)
+                        {
+                            if (!string.IsNullOrEmpty(img.ImageFileName))
+                            {
+                                string localFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", img.ImageFileName.TrimStart('/'));
+                                if (System.IO.File.Exists(localFilePath))
+                                {
+                                    System.IO.File.Delete(localFilePath);
+                                }
+                            }
+                        }
+                    }
+                }
+                // --- 5. 處理新上傳的圖片 ---
+                if (imageFiles != null && imageFiles.Count > 0)
+                {
+                    // 設定圖片儲存路徑 (wwwroot/images/posts)
+                    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "posts");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    foreach (var file in imageFiles)
+                    {
+                        if (file.Length > 0)
+                        {
+                            // 產生檔名（避免檔名重複）
+                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                            // 儲存檔案到伺服器實體路徑
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(fileStream);
+                            }
+
+                            // 新增紀錄到 PostImage 資料表
+                            _context.PostImages.Add(new PostImage
+                            {
+                                CommunityPostId = id,
+                                ImageFileName = "/images/posts/" + uniqueFileName, // 對應你資料庫欄位 ImageFileName
+                                SortOrder = 1
+                            });
+                        }
+                    }
+                }
+
+                // 儲存所有變更
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -182,6 +276,9 @@ public class CommunityPostController : Controller
             }
             return RedirectToAction(nameof(Index));
         }
+
+        // 若驗證失敗重新回傳 View，記得把商品選單重新補上，畫面才不會壞掉
+        ViewBag.ProductList = await _context.Products!.ToListAsync();
         return View(communitypost);
     }
 
