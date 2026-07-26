@@ -1,0 +1,87 @@
+@model CLOthings.ViewModels.ProductViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="d-flex gap-2 flex-wrap" >
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProductId" />
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SupplierId" class="control-label"></label>
+                <select asp-for="SupplierId" asp-items="@ViewBag.SupplierOptions" class="form-control">
+                    <option value="">--請選擇--</option>
+                </select>
+                <span asp-validation-for="SupplierId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductCategoryId" class="control-label"></label>
+                <select asp-for="ProductCategoryId" asp-items="@ViewBag.CategoryOptions" class="form-control">
+                    <option value="">--請選擇--</option>
+                </select>
+                <span asp-validation-for="ProductCategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" asp-items="@ViewBag.StatusOptions" class="form-control">
+                    <option value="">--請選擇--</option>
+                </select> 
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SalesStartDate" class="control-label"></label>
+                <input asp-for="SalesStartDate" class="form-control" />
+                <span asp-validation-for="SalesStartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SalesEndDate" class="control-label"></label>
+                <input asp-for="SalesEndDate" class="form-control" />
+                <span asp-validation-for="SalesEndDate" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="ProductImg" class="control-label"></label>
+                <input asp-for="ProductImg" class="form-control" />
+                <span asp-validation-for="ProductImg" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductSpecifications" class="control-label"></label>
+                <input asp-for="ProductSpecifications" class="form-control" />
+                <span asp-validation-for="ProductSpecifications" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
