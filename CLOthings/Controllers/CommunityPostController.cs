@@ -79,9 +79,12 @@ public class CommunityPostController : Controller
     // GET: COMMUNITYPOSTS/Create
     public async Task<IActionResult> Create()
     {
-        // 撈出所有使用者清單與商品清單給前端選單使用
-        ViewBag.Users = await _context.Users.ToListAsync();
-        ViewBag.Products = await _context.Products.ToListAsync();
+        // 假設預設管理員 ID 為 17 (或你登入的 Admin ID)
+        ViewBag.AdminUserId = 17;
+        ViewBag.AdminUserName = "superAdmin (官方管理員)";
+
+        // 準備商品選單
+        ViewBag.Products = _context.Products.ToList();
         return View();
     }
 

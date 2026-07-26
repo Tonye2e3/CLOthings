@@ -13,19 +13,13 @@
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <!-- 1. 選擇發文者測試 -->
-            <div class="form-group mb-3">
-                <label class="control-label">發文者 (測試用)</label>
-                <select asp-for="UserId" class="form-control">
-                    @if (ViewBag.Users != null)
-                    {
-                        foreach (var user in ViewBag.Users)
-                        {
-                            // 假設 User 模型裡有 UserId 與 UserName/Name 欄位
-                            <option value="@user.UserId">@user.UserId - @user.Username</option>
-                        }
-                    }
-                </select>
+            <!-- 發布帳號：固定為管理者，不允許隨意切換成其他會員 -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">發布帳號</label>
+                <input type="text" class="form-control" value="@ViewBag.AdminUserName" readonly />
+                <input type="hidden" name="UserId" value="@ViewBag.AdminUserId" />
+                <small class="text-muted">後台新增之貼文將統一以官方管理員身份發布。</small>
+            
             </div>
             <!-- 2. 貼文內容 -->
             <div class="form-group">
