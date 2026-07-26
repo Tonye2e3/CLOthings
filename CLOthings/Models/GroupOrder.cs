@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CLOthings.Models;
 
@@ -18,7 +19,6 @@ public partial class GroupOrder
     public DateTime OrderDate { get; set; }
 
     public DateTime? ShipperDate { get; set; }
-
     public int? GroupShipperId { get; set; }
 
     public string PickupMethod { get; set; }

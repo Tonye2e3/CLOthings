@@ -1,0 +1,113 @@
+@model CLOthings.Models.GroupOrder
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+<h4>GroupOrder</h4>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- 修正重點：asp-route-id -->
+        <form asp-action="Edit" asp-route-id="@Model.GroupOrderId">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="GroupOrderId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="UserId" class="control-label"></label>
+                <input asp-for="UserId" class="form-control" />
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-select">
+                    <option value="處理中">處理中</option>
+                    <option value="已付款">已付款</option>
+                    <option value="出貨中">出貨中</option>
+                    <option value="已完成">已完成</option>
+                    <option value="已取消">已取消</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="TotalPrice" class="control-label"></label>
+                <input asp-for="TotalPrice" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="TotalPrice" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="OrderDate" class="control-label"></label>
+                <input asp-for="OrderDate" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                <span asp-validation-for="OrderDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ShipperDate" class="control-label"></label>
+                <input asp-for="ShipperDate" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+                <span asp-validation-for="ShipperDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="GroupShipperId" class="control-label"></label>
+                <input asp-for="GroupShipperId" class="form-control" />
+                <span asp-validation-for="GroupShipperId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PickupMethod" class="control-label"></label>
+                <select asp-for="PickupMethod" class="form-select">
+                    <option value="面交">面交</option>
+                    <option value="宅配">宅配</option>
+                    <option value="超商取貨">超商取貨</option>
+                </select>
+                <span asp-validation-for="PickupMethod" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ShipName" class="control-label"></label>
+                <input asp-for="ShipName" class="form-control" />
+                <span asp-validation-for="ShipName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ShipAddress" class="control-label"></label>
+                <input asp-for="ShipAddress" class="form-control" />
+                <span asp-validation-for="ShipAddress" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ShipPhone" class="control-label"></label>
+                <input asp-for="ShipPhone" class="form-control" />
+                <span asp-validation-for="ShipPhone" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Freight" class="control-label"></label>
+                <input asp-for="Freight" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="Freight" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PaymentMethodId" class="control-label"></label>
+                <input asp-for="PaymentMethodId" class="form-control" />
+                <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-4 mb-5">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
