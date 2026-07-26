@@ -3,20 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CLOthings.ViewModels
 {
-    public class UserCreateViewModel
+    public class UserCreateViewModel : LoginViewModel
     {
         [Required(ErrorMessage = "使用者名稱必填")]
         [StringLength(50, ErrorMessage = "使用者名稱不可超過 50 字")]
         public string Username { get; set; }
-
-        [Required(ErrorMessage = "帳號必填")]
-        [StringLength(20, MinimumLength = 5, ErrorMessage = "帳號長度需介於 5~20 字")]
-        public string Account { get; set; }
-
-        [Required(ErrorMessage = "密碼必填")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "密碼請大於6位數")]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
 
         [Required(ErrorMessage = "電子郵件必填")]
 

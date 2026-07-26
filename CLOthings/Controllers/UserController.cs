@@ -71,6 +71,11 @@ public class UserController : Controller
             ModelState.AddModelError("Account", "此帳號已被註冊");
             return View(vm);
         }
+        if (_context.Users.Any(u => u.Username == vm.Username))
+        {
+            ModelState.AddModelError("Username", "此使用者名稱已被使用");
+            return View(vm);
+        }
 
         // 將 ViewModel 轉換成 User 實體
         var user = new User
@@ -113,7 +118,7 @@ public class UserController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? userid, [Bind("UserId,Username,Account,Password,Email,Phone,UpdatedAt,UserType,Status,TwoFactorEnabled,TwoFactorSecret,CountryCode,Carts,CommunityPosts,CustomerFavorites,GroupCarts,GroupCustomerFavorites,GroupOrders,GroupPaymentMethods,Orders,PaymentMethods,PostComments,PostLikes,Reviews,UserAddresses,UserFollowFollowers,UserFollowFollowings,UserOauths,UserProfiles")] User user)
+    public async Task<IActionResult> Edit(UserCreateViewModel vm)
     {
 
         if (userid != user.UserId)
@@ -226,16 +231,16 @@ public class UserController : Controller
             .FirstOrDefaultAsync(u => u.Account == vm.Account);
         Console.WriteLine($"查詢完成，用時：{sw.ElapsedMilliseconds} ms");
 
-        if (user == null)
+        if (user == null || user.Password != vm.Password)
         {
             ModelState.AddModelError("", "帳號或密碼錯誤");
-            return View();
+            return View(vm);
         }
 
         if (user.UserType == UserTypeEnum.Banned)
         {
             ModelState.AddModelError("", "您的帳號已被封禁");
-            return View();
+            return View(vm);
         }
 
         // 建立 Claims
@@ -304,6 +309,11 @@ public class UserController : Controller
         if (_context.Users.Any(u => u.Account == vm.Account))
         {
             ModelState.AddModelError("Account", "此帳號已被註冊");
+            return View(vm);
+        }
+        if (_context.Users.Any(u => u.Username == vm.Username))
+        {
+            ModelState.AddModelError("Username", "此使用者名稱已被使用");
             return View(vm);
         }
 
