@@ -9,7 +9,7 @@
 <p>
     <a class="btn btn-primary" asp-action="Create">創建</a>
 </p>
-<table class="table" style="table-layout: fixed; width: 100%;">
+<table class="table text-nowrap" style="table-layout: auto; width: 100%;">
     <thead>
         <tr>
             <th>
@@ -21,7 +21,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Password)
             </th>
-            <th style="width:200px;">
+            <th >
                 @Html.DisplayNameFor(model => model.Email)
             </th>
             <th>
@@ -78,7 +78,7 @@
                     @Html.DisplayFor(model => item.Status)
                 </td>
                 <td>
-                    @Html.DisplayFor(model => item.TwoFactorEnabled)
+                    @(item.TwoFactorEnabled ==true ? "已啟用" : "未啟用")
                 </td>
               
                 <td>
@@ -92,21 +92,4 @@
         }
     </tbody>
 </table>
-
-@* if (user.UserType == UserTypeEnum.SuperAdmin)
-{
-// 顯示最高管理員功能
-}
-else if (user.UserType == UserTypeEnum.Admin)
-{
-// 顯示一般管理員功能
-}
-else if (user.UserType == UserTypeEnum.User)
-{
-// 顯示一般用戶功能
-}
-else if (user.UserType == UserTypeEnum.Banned)
-{
-// 顯示封禁訊息
-} *@
 
