@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 
-[Route("/User/{action=index}/{userid?}")] //Attribute Routing 更換路由設定
+//[Route("/User/{action=index}/{userid?}")] //Attribute Routing 更換路由設定
 public class UserController : Controller
 {
     private readonly CLOthingsContext _context;
@@ -49,8 +49,8 @@ public class UserController : Controller
     {
         var vm = new UserCreateViewModel
         {
-            UserType = (UserTypeEnum)3, // 一般使用者
-            Status = (StatusEnum)1      // 啟用
+            UserType = UserTypeEnum.User, // 一般使用者
+            Status = StatusEnum.Active      // 啟用
         };
         return View(vm);
     }
@@ -82,8 +82,8 @@ public class UserController : Controller
             Phone = vm.Phone,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
-            UserType = UserTypeEnum.User,
-            Status = StatusEnum.Active
+            UserType = vm.UserType,
+            Status = vm.Status
         };
 
         _context.Users.Add(user);

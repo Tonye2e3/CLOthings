@@ -1,4 +1,7 @@
 @model CLOthings.ViewModels.UserCreateViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using CLOthings.Enums
+
 
 @{
     ViewData["Title"] = "Create";
@@ -10,7 +13,8 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -27,7 +31,7 @@
 
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+                <input asp-for="Password" type="password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
@@ -37,37 +41,31 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
+            <div class="form-group"> 
+                <label asp-for="Phone" class="control-label"></label> 
+                <input asp-for="Phone" class="form-control" />        
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
 
-            <!-- 下拉選單 -->
             <div class="form-group">
-                <label asp-for="UserType" class="control-label"></label>
-                @Html.DropDownListFor(model => model.UserType,
-                    new SelectList(new[]
-                    {
-                        new { Value = 3, Text = "一般使用者" },
-                        new { Value = 2, Text = "管理員" },
-                    }, "Value", "Text"),
+                <label asp-for="UserType"></label>
+                @Html.DropDownListFor(
+                    model => model.UserType,
+                    Html.GetEnumSelectList(typeof(UserTypeEnum))
+                    .Where(x => x.Value != ((int)UserTypeEnum.SuperAdmin).ToString()),//排除 Admin
                     "請選擇使用者類型",
-                    new { @class = "form-control" })
-                <span asp-validation-for="UserType" class="text-danger"></span>
+                    new { @class = "form-control" }
+                )
             </div>
+
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                @Html.DropDownListFor(model => model.Status,
-                    new SelectList(new[]
-                    {
-                        new { Value = 1, Text = "啟用" },
-                        new { Value = 0, Text = "停用" }
-                    }, "Value", "Text"),
-                    "請選擇帳戶狀態",
-                    new { @class = "form-control" })
-                <span asp-validation-for="Status" class="text-danger"></span>
+                <label asp-for="Status"></label>
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusEnum>()" class="form-control">
+                    <option value="">請選擇帳戶狀態</option>
+                </select>
             </div>
+
+    @* 按鈕 *@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -78,3 +76,7 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

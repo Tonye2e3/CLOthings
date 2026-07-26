@@ -27,7 +27,10 @@ namespace CLOthings.ViewModels
         [Phone(ErrorMessage = "請輸入正確的電話號碼")]
         public string Phone { get; set; }
 
+        [Required(ErrorMessage = "請選擇使用者類型")]
         public UserTypeEnum UserType { get; set; }
+
+        [Required(ErrorMessage = "請選擇帳戶狀態")]
         public StatusEnum Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
