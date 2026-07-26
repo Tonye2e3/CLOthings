@@ -110,7 +110,21 @@ public class UserController : Controller
         {
             return NotFound();
         }
-        return View(user);
+        var vm = new UserCreateViewModel
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+            Account = user.Account,
+            Password = user.Password,
+            Email = user.Email,
+            Phone = user.Phone,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            UserType = user.UserType,
+            Status = user.Status,
+            TwoFactorEnabled = user.TwoFactorEnabled
+        };
+        return View(vm);
     }
 
     // POST: USERS/Edit/5
@@ -121,53 +135,51 @@ public class UserController : Controller
     public async Task<IActionResult> Edit(UserCreateViewModel vm)
     {
 
-        if (userid != user.UserId)
-        {
-            return NotFound();
+        if (!ModelState.IsValid)
+        {    // 驗證失敗 → 回傳原本的 View
+            return View(vm);
         }
 
-        if (ModelState.IsValid)
+
+        try
         {
-            try
+            var existingUser = await _context.Users.FindAsync(vm.UserId);
+            if (existingUser == null)
             {
-                var existingUser = await _context.Users.FindAsync(userid);
-                if (existingUser == null)
-                {
-                    return NotFound();
-                }
-
-                // 更新必要欄位
-                existingUser.Username = user.Username;
-                existingUser.Account = user.Account;
-                existingUser.Password = user.Password;
-                existingUser.Email = user.Email;
-                existingUser.Phone = user.Phone;
-                existingUser.UserType = user.UserType;
-                existingUser.Status = user.Status;
-                existingUser.TwoFactorEnabled = user.TwoFactorEnabled ?? false;
-                existingUser.CountryCode = user.CountryCode;
-
-                // ✅ 自動更新時間
-                existingUser.UpdatedAt = DateTime.Now;
-
-                // ❌ 不要動 CreatedAt
-                await _context.SaveChangesAsync();
+                return NotFound(vm);
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(user.UserId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
 
+            // 更新必要欄位
+            existingUser.Username = vm.Username;
+            existingUser.Account = vm.Account;
+            existingUser.Password = vm.Password;
+            existingUser.Email = vm.Email;
+            existingUser.Phone = vm.Phone;
+            existingUser.UserType = vm.UserType;
+            existingUser.Status = vm.Status;
+            existingUser.TwoFactorEnabled = vm.TwoFactorEnabled;
+
+            // ✅ 自動更新時間
+            existingUser.UpdatedAt = DateTime.Now;
+
+            // ❌ 不要動 CreatedAt
+            await _context.SaveChangesAsync();
         }
-        return View(user);
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!UserExists(vm.UserId))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+        return RedirectToAction(nameof(Index));
+
+
+        return View(vm);
     }
 
     // GET: USERS/Delete/5
