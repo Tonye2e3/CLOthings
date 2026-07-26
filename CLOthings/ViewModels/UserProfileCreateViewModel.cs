@@ -12,7 +12,6 @@ namespace CLOthings.ViewModels
         public int UserProfileId { get; set; }
 
 
-        [Display(Name = "使用者帳號")]
         public int UserId { get; set; }
 
         [Display(Name = "名字")]
