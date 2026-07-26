@@ -1,0 +1,44 @@
+@model CLOthings.Models.CommunityPost
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card border-danger shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">⚠️ 確定要刪除此貼文嗎？</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-4">刪除後資料將無法復原，包含關聯的圖片與標籤商品都將一併刪除。</p>
+
+            <dl class="row">
+                <dt class="col-sm-3">貼文編號</dt>
+                <dd class="col-sm-9">@Model.CommunityPostId</dd>
+
+                <dt class="col-sm-3">發布使用者</dt>
+                <dd class="col-sm-9">
+                    @(Model.User?.Username ?? Model.UserId.ToString())
+                </dd>
+
+                <dt class="col-sm-3">發布時間</dt>
+                <dd class="col-sm-9">@Model.PostDate.ToString("yyyy/MM/dd HH:mm")</dd>
+
+                <dt class="col-sm-3">貼文狀態</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-success">@Model.Status</span>
+                </dd>
+
+                <dt class="col-sm-3">貼文內容</dt>
+                <dd class="col-sm-9 text-break">@Model.Content</dd>
+            </dl>
+
+            <form asp-action="Delete" class="mt-4 d-flex gap-2">
+                <!-- 確保傳送正確的的主鍵 ID 給 Controller -->
+                <input type="hidden" asp-for="CommunityPostId" />
+                <button type="submit" class="btn btn-danger">確認刪除</button>
+                <a asp-action="Index" class="btn btn-secondary">取消回列表</a>
+            </form>
+        </div>
+    </div>
+</div>
