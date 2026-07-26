@@ -1,0 +1,59 @@
+@model CLOthings.Models.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="mb-4">使用者詳細資料</h1>
+
+<table class="table table-bordered table-striped" style="width:70%;">
+    <tbody>
+        <tr>
+            <th style="width:30%;">@Html.DisplayNameFor(m => m.Username)</th>
+            <td>@Html.DisplayFor(m => m.Username)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Account)</th>
+            <td>@Html.DisplayFor(m => m.Account)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Password)</th>
+            <td>@Html.DisplayFor(m => m.Password)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Email)</th>
+            <td>@Html.DisplayFor(m => m.Email)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Phone)</th>
+            <td>@Html.DisplayFor(m => m.Phone)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.CreatedAt)</th>
+            <td>@Html.DisplayFor(m => m.CreatedAt)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.UpdatedAt)</th>
+            <td>@Html.DisplayFor(m => m.UpdatedAt)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.UserType)</th>
+            <td>@Html.DisplayFor(m => m.UserType)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.Status)</th>
+            <td>@Html.DisplayFor(m => m.Status)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.TwoFactorEnabled)</th>
+            <td>
+                @(Model.TwoFactorEnabled == true ? "✅ 已啟用" : "❌ 未啟用")
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="mt-3">
+    <a class="btn btn-secondary" asp-action="Edit" asp-route-userid="@Model?.UserId">編輯</a>
+    <a class="btn btn-outline-primary" asp-action="Index">返回列表</a>
+</div>

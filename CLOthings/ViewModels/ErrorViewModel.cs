@@ -1,4 +1,4 @@
-namespace CLOthings.Models
+namespace CLOthings.ViewModels
 {
     public class ErrorViewModel
     {

@@ -1,5 +1,112 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+@model IEnumerable<CLOthings.Models.User>
+
 @{
+    ViewData["Title"] = "Index";
 }
+
+<h1>使用者管理</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">創建</a>
+</p>
+<table class="table" style="table-layout: fixed; width: 100%;">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th style="width:200px;">
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserType)
+            </th>
+            <th >
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TwoFactorEnabled)
+            </th>
+
+            <th>設定</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => item.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Account)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Password)
+                </td>
+                <td >
+                    @Html.DisplayFor(model => item.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.CreatedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.UpdatedAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.UserType)
+                </td>
+                <td >
+                    @Html.DisplayFor(model => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.TwoFactorEnabled)
+                </td>
+              
+                <td>
+                    <div  role="group">
+                        <a class="btn btn-secondary" style="width:60px;" asp-action="Edit" asp-route-userid="@item.UserId">編輯</a>
+                        <a class="btn btn-secondary" style="width:60px;" asp-action="Details" asp-route-userid="@item.UserId">檢視</a>
+                        <a class="btn btn-danger" style="width:60px;" asp-action="Delete" asp-route-userid="@item.UserId">刪除</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* if (user.UserType == UserTypeEnum.SuperAdmin)
+{
+// 顯示最高管理員功能
+}
+else if (user.UserType == UserTypeEnum.Admin)
+{
+// 顯示一般管理員功能
+}
+else if (user.UserType == UserTypeEnum.User)
+{
+// 顯示一般用戶功能
+}
+else if (user.UserType == UserTypeEnum.Banned)
+{
+// 顯示封禁訊息
+} *@
+

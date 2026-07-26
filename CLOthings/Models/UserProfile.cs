@@ -2,6 +2,8 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CLOthings.Models;
 
@@ -9,16 +11,24 @@ public partial class UserProfile
 {
     public int UserProfileId { get; set; }
 
+    [Display(Name = "使用者編號")]
     public int UserId { get; set; }
 
+    [Display(Name = "名字")]
     public string FirstName { get; set; }
 
+    [Display(Name = "姓氏")]
     public string LastName { get; set; }
 
+    [Display(Name = "頭像")]
     public string Avatar { get; set; }
+    [NotMapped]
+    public IFormFile? AvatarFile { get; set; }
 
+    [Display(Name = "性別")]
     public string Gender { get; set; }
 
+    [Display(Name = "生日")]
     public DateOnly? Birthday { get; set; }
 
     public virtual User User { get; set; }

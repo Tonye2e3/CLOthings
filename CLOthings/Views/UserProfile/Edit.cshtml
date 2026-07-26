@@ -1,0 +1,86 @@
+@model CLOthings.Models.UserProfile
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>編輯個人資料</h1>
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* 這兩個一定要 hidden，不能給使用者改 *@
+            <input type="hidden" asp-for="UserProfileId" />
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AvatarFile" class="control-label">更換大頭貼</label>
+                @if (!string.IsNullOrEmpty(Model.Avatar))
+                {
+                    <div class="mb-2">
+                        <img src="@Model.Avatar" style="width:100px;height:100px;border-radius:50%;object-fit:cover;" />
+                    </div>
+                }
+                <input asp-for="AvatarFile" type="file" class="form-control" accept="image/*" id="avatarInput" />
+                <span asp-validation-for="AvatarFile" class="text-danger"></span>
+                <img id="preview" style="max-width:150px; margin-top:10px; display:none; border-radius:10px;" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="">請選擇性別</option>
+                    <option value="Male">男</option>
+                    <option value="Female">女</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Birthday" class="control-label"></label>
+                <input asp-for="Birthday" type="date" class="form-control" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
+            </div>
+
+            @* User 導覽屬性直接刪掉，不能編輯 *@
+
+            <div class="form-group">
+                <input type="submit" value="儲存" class="btn btn-primary" />
+                <a asp-action="Profile" class="btn btn-secondary">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const img = document.getElementById('preview');
+                    img.src = ev.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

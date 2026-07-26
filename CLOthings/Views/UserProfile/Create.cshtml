@@ -1,0 +1,100 @@
+@model CLOthings.ViewModels.UserProfileCreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>UserProfile</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* 一般使用者直接用 hidden，不給他選 *@
+            <input type="hidden" asp-for="UserId" />
+
+            @* 只有 SuperAdmin 才需要看到下拉，方便他幫別人建 *@
+            @if (User.IsInRole("SuperAdmin"))
+            {
+                <div class="form-group">
+                    <label asp-for="UserId" class="control-label"></label>
+                    <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
+                        <option value="">請選擇使用者</option>
+                    </select>
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label>使用者帳號</label>
+                    <input class="form-control" value="@User.Identity.Name" disabled />
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AvatarFile" class="control-label"></label>
+                <input asp-for="AvatarFile" type="file" class="form-control" accept="image/*" />
+                <span asp-validation-for="AvatarFile" class="text-danger"></span>
+                @* 加個預覽，更好看 *@
+                <img id="preview" style="max-width:150px; margin-top:10px; display:none;" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                @Html.DropDownListFor(model => model.Gender,
+                     new SelectList(new[]
+                     {
+                        new { Value = "Male", Text="男"  },
+                        new { Value ="Female" ,Text="女" },
+                     }, "Value", "Text"),
+                     "請選擇使用者類型",
+                     new { @class = "form-control" })
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Birthday" class="control-label"></label>
+                <input asp-for="Birthday" type="date" class="form-control" />
+                <span asp-validation-for="Birthday" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script>
+        // 選圖後立即預覽
+        document.getElementById('AvatarFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const img = document.getElementById('preview');
+                    img.src = evt.target.result;
+                    img.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+@model IEnumerable<CLOthings.Models.UserProfile>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>個人資料</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">創建</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Avatar)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthday)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>設定</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(model => item.UserId)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Avatar)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Gender)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.Birthday)
+                </td>
+                <td>@item.User?.Username</td>
+
+                <td>
+                    <a class="btn btn-secondary" style="width:60px;" asp-action="Edit" asp-route-userprofileid="@item.UserProfileId">編輯</a>
+                    <a class="btn btn-secondary" style="width:60px;" asp-action="Details" asp-route-userprofileid="@item.UserProfileId">檢視</a>
+                    <a class="btn btn-danger" style="width:60px;" asp-action="Delete" asp-route-userprofileid="@item.UserProfileId">刪除</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
