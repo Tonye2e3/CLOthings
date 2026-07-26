@@ -170,18 +170,26 @@ public class CommunityPostController : Controller
         {
             return NotFound();
         }
-
-        // 1. 關鍵！加上 .Include() 將圖片與標籤商品撈出來
         var communityPost = await _context.CommunityPosts
-                .Include(p => p.PostImages)
-                .Include(p => p.PostTaggedProducts)
-                .FirstOrDefaultAsync(m => m.CommunityPostId == id); if (communityPost == null)
+        .Include(c => c.User)
+        .Include(c => c.PostImages)
+        .Include(c => c.PostTaggedProducts!)
+            .ThenInclude(tp => tp.Product)
+        .FirstOrDefaultAsync(m => m.CommunityPostId == id);
+
+        if (communityPost == null)
         {
             return NotFound();
         }
 
-        // 2. 關鍵！撈出所有商品清單傳給 View，這樣標籤商品區才會有核取方塊 (Checkbox) 可以勾選
-        ViewBag.ProductList = await _context.Products!.ToListAsync();
+        // 準備商品勾選清單（供管理者調整標籤商品）
+        var selectedProductIds = communityPost.PostTaggedProducts?.Select(tp => tp.ProductId).ToList() ?? new List<int>();
+        ViewBag.Products = await _context.Products
+            .Select(p => new {
+                p.ProductId,
+                p.ProductName,
+                IsSelected = selectedProductIds.Contains(p.ProductId)
+            }).ToListAsync();
         return View(communityPost);
     }
 
@@ -190,126 +198,56 @@ public class CommunityPostController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("CommunityPostId,UserId,Content,Status,PostDate")] CommunityPost communitypost, int[]? selectedProductIds, List<IFormFile>? imageFiles,
-    int[]? deleteImageIds)
+    public async Task<IActionResult> Edit(int id, string Status, List<int> selectedProductIds)
     {
-        if (id != communitypost.CommunityPostId)
+        // 從資料庫撈出該筆貼文及其標籤商品
+        var postToUpdate = await _context.CommunityPosts
+            .Include(c => c.PostTaggedProducts)
+            .FirstOrDefaultAsync(p => p.CommunityPostId == id);
+
+        if (postToUpdate == null)
         {
             return NotFound();
         }
 
-        if (ModelState.IsValid)
+        try
         {
-            try
+            // 1. 僅更新管理者權限欄位（狀態切換：public / hidden）
+            postToUpdate.Status = Status;
+
+            // 2. 更新標籤商品（先清空舊標籤，再建立勾選的新標籤）
+            if (postToUpdate.PostTaggedProducts != null)
             {
-                // 1. 解決日期溢位問題：若傳進來的 PostDate 為預設值 0001/01/01，則預設賦予目前時間
-                if (communitypost.PostDate == default(DateTime))
-                {
-                    communitypost.PostDate = DateTime.Now;
-                }
-
-                // 2. 更新貼文主體基本資料
-                _context.Update(communitypost);
-
-                // 3. 更新「標籤商品」關聯資料
-                // 先抓出該貼文現有的標籤商品
-                var existingTags = _context.PostTaggedProducts.Where(p => p.CommunityPostId == id);
-                _context.PostTaggedProducts.RemoveRange(existingTags); // 先清空舊標籤
-
-                // 如果使用者有勾選新的商品，再重新建立關聯
-                if (selectedProductIds != null && selectedProductIds.Length > 0)
-                {
-                    foreach (var productId in selectedProductIds)
-                    {
-                        _context.PostTaggedProducts.Add(new PostTaggedProduct
-                        {
-                            CommunityPostId = id,
-                            ProductId = productId
-                        });
-                    }
-                }
-                // --- 4. 處理刪除勾選的圖片 (新增這段) ---
-                if (deleteImageIds != null && deleteImageIds.Length > 0)
-                {
-                    // 抓出要刪除的圖片紀錄
-                    var imagesToDelete = await _context.PostImages
-                        .Where(img => deleteImageIds.Contains(img.PostImageId))
-                        .ToListAsync();
-
-                    if (imagesToDelete.Any())
-                    {
-                        // 從資料庫刪除紀錄
-                        _context.PostImages.RemoveRange(imagesToDelete);
-
-                        // (可選) 順便刪除 wwwroot 裡的實體檔案，避免產生垃圾檔案：
-                        foreach (var img in imagesToDelete)
-                        {
-                            if (!string.IsNullOrEmpty(img.ImageFileName))
-                            {
-                                string localFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", img.ImageFileName.TrimStart('/'));
-                                if (System.IO.File.Exists(localFilePath))
-                                {
-                                    System.IO.File.Delete(localFilePath);
-                                }
-                            }
-                        }
-                    }
-                }
-                // --- 5. 處理新上傳的圖片 ---
-                if (imageFiles != null && imageFiles.Count > 0)
-                {
-                    // 設定圖片儲存路徑 (wwwroot/images/posts)
-                    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "posts");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    foreach (var file in imageFiles)
-                    {
-                        if (file.Length > 0)
-                        {
-                            // 產生檔名（避免檔名重複）
-                            string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
-                            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                            // 儲存檔案到伺服器實體路徑
-                            using (var fileStream = new FileStream(filePath, FileMode.Create))
-                            {
-                                await file.CopyToAsync(fileStream);
-                            }
-
-                            // 新增紀錄到 PostImage 資料表
-                            _context.PostImages.Add(new PostImage
-                            {
-                                CommunityPostId = id,
-                                ImageFileName = "/images/posts/" + uniqueFileName, // 對應你資料庫欄位 ImageFileName
-                                SortOrder = 1
-                            });
-                        }
-                    }
-                }
-
-                // 儲存所有變更
-                await _context.SaveChangesAsync();
+                _context.PostTaggedProducts.RemoveRange(postToUpdate.PostTaggedProducts);
             }
-            catch (DbUpdateConcurrencyException)
+
+            if (selectedProductIds != null && selectedProductIds.Any())
             {
-                if (!CommunityPostExists(communitypost.CommunityPostId))
+                foreach (var productId in selectedProductIds)
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    _context.PostTaggedProducts.Add(new PostTaggedProduct
+                    {
+                        CommunityPostId = id,
+                        ProductId = productId
+                    });
                 }
             }
+
+            // 3. 儲存所有變更
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        // 若驗證失敗重新回傳 View，記得把商品選單重新補上，畫面才不會壞掉
-        ViewBag.ProductList = await _context.Products!.ToListAsync();
-        return View(communitypost);
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!_context.CommunityPosts.Any(e => e.CommunityPostId == id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
 
     // GET: COMMUNITYPOSTS/Delete/5

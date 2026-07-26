@@ -4,117 +4,124 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>⚙️ 貼文審核與狀態管理</h2>
+        <span class="badge bg-secondary fs-6">Post ID: @Model.CommunityPostId</span>
+    </div>
 
-<h4>CommunityPost</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <!-- 隱藏主鍵 ID -->
-            <input type="hidden" asp-for="CommunityPostId" />
-            
-            <!-- 1. 發文者 ID (可留作紀錄或隱藏) -->
-            <div class="form-group mb-3">
-                <label asp-for="UserId" class="control-label">發文者</label>
-                <input asp-for="UserId" class="form-control" readonly />
+    <!-- 1. 使用者原始貼文內容（唯讀區塊，維護資料真實性與防止越權） -->
+    <div class="card mb-4 border-0 shadow-sm bg-light">
+        <div class="card-body">
+            <h5 class="fw-bold text-secondary mb-3">📌 原始貼文資訊（唯讀）</h5>
+
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <strong>發布使用者：</strong>
+                    <span class="text-primary">👤 @(Model.User?.Username ?? $"使用者 ID: {Model.UserId}")</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>發布時間：</strong> @Model.PostDate.ToString("yyyy/MM/dd HH:mm:ss")
+                </div>
             </div>
 
-            <!-- 2. 貼文內容 -->
-            <div class="form-group mb-3">
-                <label asp-for="Content" class="control-label">貼文內容</label>
-                <textarea asp-for="Content" class="form-control" rows="3"></textarea>                
-                <span asp-validation-for="Content" class="text-danger"></span>
+            <div class="mb-3">
+                <strong>貼文內文：</strong>
+                <div class="p-3 bg-white rounded border mt-1 text-break">
+                    @Model.Content
+                </div>
             </div>
 
-            <!-- 3. 發佈日期 -->
-            <div class="form-group mb-3">
-                <label asp-for="PostDate" class="control-label">發佈日期</label>
-                <input asp-for="PostDate" class="form-control" readonly />
-            </div>
-
-            <!-- 4. 文章狀態 (下拉選單) -->
-            <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label">文章狀態</label>
-                <select asp-for="Status" class="form-control">
-                    <option value="public">public (公開)</option>
-                    <option value="hidden">hidden (隱藏)</option>
-                    <option value="check">check (審核中)</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            
-            <!-- 5. 目前圖片與新圖片上傳 -->
-            <div class="form-group mb-3">
-                <label class="form-label fw-bold">目前貼文照片（勾選即可刪除）</label>
-                <div class="d-flex flex-wrap gap-3 mt-2">
-                    @if (Model.PostImages != null && Model.PostImages.Any())
+            <!-- 貼文圖片預覽 -->
+            @if (Model.PostImages != null && Model.PostImages.Any())
+            {
+                <div class="mb-2">
+                    <strong>貼文圖片：</strong>
+                    <div class="d-flex gap-2 flex-wrap mt-2">
+                        @foreach (var img in Model.PostImages)
                         {
-                            <div class="d-flex flex-wrap gap-3">
-                                @foreach (var img in Model.PostImages)
+                            <img src="@img.ImageFileName" class="rounded border" style="width: 100px; height: 100px; object-fit: cover;" />
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="mb-2">
+                    <strong>貼文圖片：</strong> <span class="text-muted">（無圖片）</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 2. 管理者處置表單 -->
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="CommunityPostId" />
+
+        <div class="card mb-4 border-primary shadow-sm">
+            <div class="card-header bg-primary text-white fw-bold">
+                🛠️ 管理者處置設定
+            </div>
+            <div class="card-body">
+
+                <!-- 文章狀態切換 -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">文章顯示狀態 (Status)</label>
+                    <select asp-for="Status" class="form-select form-select-lg">
+                        <option value="public">public (公開顯示)</option>
+                        <option value="hidden">hidden (違規隱藏 / 下架)</option>
+                        <option value="check">check (審核中)</option>
+                    </select>
+                    <div class="form-text text-muted">
+                        若貼文包含違規或爭議言論，請將狀態切換為 <code>hidden</code>，前台將不再顯示此貼文。
+                    </div>
+                </div>
+
+                <!-- 標籤商品修正 -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">協助標籤商品 (Tag Products)</label>
+                    <div class="p-3 border rounded bg-light" style="max-height: 180px; overflow-y: auto;">
+                        <div class="row g-2">
+                            @if (ViewBag.Products != null)
+                            {
+                                foreach (var product in ViewBag.Products)
                                 {
-                                    <div class="card p-2 text-center" style="width: 110px;">
-                                        <img src="@img.ImageFileName" class="img-thumbnail mb-2" style="height: 90px; object-fit: cover;" />
-                                        <div class="form-check d-flex justify-content-center gap-1 p-0">
-                                            <input type="checkbox" name="deleteImageIds" value="@img.PostImageId" class="form-check-input" id="img_@img.PostImageId" />
-                                            <label class="form-check-label text-danger fw-bold" for="img_@img.PostImageId" style="font-size: 12px; cursor: pointer;">刪除</label>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="selectedProductIds"
+                                                   value="@product.ProductId"
+                                                   id="product_@product.ProductId"
+                                            @(product.IsSelected ? "checked" : "") />
+                                            <label class="form-check-label" for="product_@product.ProductId">
+                                                @product.ProductName
+                                            </label>
                                         </div>
                                     </div>
                                 }
-                            </div>
-                    }
-                    else
-                    {
-                        <span class="text-muted">目前無圖片</span>
-                    }
+                            }
+                            else
+                            {
+                                <span class="text-muted">（無商品可選）</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-text text-muted">管理者可在此協助勾選並補上正確的關聯商品標籤。</div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">新增/上傳圖片（若不修改請留空）</label>
-                    <!-- 2. 加上 multiple 即可開啟多選功能 -->
-                    <input type="file" name="imageFiles" class="form-control" multiple accept="image/*" />
-                    <!-- 新增下面這行提示文字 -->
-                    <small class="text-muted d-block mt-1">
-                        💡 提示：按住鍵盤 <kbd>Shift</kbd> 鍵可一次選擇多張圖片
-                    </small>
-                </div>
-            </div>
-            
-            <!-- 6. 標籤商品 (Checkbox) -->
-            <div class="form-group mb-3">
-                <label class="control-label d-block">標籤商品</label>
-                @if (ViewBag.ProductList != null)
-                {
-                    // 拿到這篇貼文目前已經勾選的 ProductId 清單
-                    var selectedIds = Model.PostTaggedProducts?.Select(p => p.ProductId).ToList() ?? new List<int>();
 
-                    foreach (var product in ViewBag.ProductList)
-                    {
-                        bool isChecked = selectedIds.Contains(product.ProductId);
-                         <div class="form-check form-check-inline me-3">
-                               <input class="form-check-input" type="checkbox" name="selectedProductIds" value="@product.ProductId" id="prod_@product.ProductId" @(isChecked ? "checked" : "")>
-                               <label class="form-check-label" for="prod_@product.ProductId">
-                                   @product.ProductName
-                               </label>
-                         </div>
-                     }
-                }
-                else
-                {
-                    <span class="text-muted">無商品可選擇</span>
-                }
-              
             </div>
-            
-            <button type="submit" class="btn btn-primary mt-2">Save</button>         
-        </form>
-    </div>
-</div>
+        </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+        <!-- 按鈕區 -->
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4">💾 儲存變更</button>
+            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
