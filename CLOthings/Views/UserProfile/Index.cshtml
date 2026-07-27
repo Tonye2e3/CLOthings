@@ -6,9 +6,10 @@
 
 <h1>個人資料</h1>
 
-<p>
+@* <p>
     <a class="btn btn-primary" asp-action="Create">創建</a>
-</p>
+</p> *@
+
 <table class="table">
     <thead>
         <tr>
@@ -31,7 +32,7 @@
                 @Html.DisplayNameFor(model => model.Birthday)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(model => model.User.Username)
             </th>
             <th>設定</th>
         </tr>
@@ -58,7 +59,7 @@
                 <td>
                     @Html.DisplayFor(model => item.Birthday)
                 </td>
-                <td>@item.User?.Username</td>
+                <td>@Html.DisplayFor(model => item.User.Username)</td>
 
                 <td>
                     <a class="btn btn-secondary" style="width:60px;" asp-action="Edit" asp-route-userprofileid="@item.UserProfileId">編輯</a>
