@@ -1,44 +1,79 @@
 @model CLOthings.Models.CommunityPost
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "刪除貼文確認";
 }
 
-<div class="container mt-4" style="max-width: 600px;">
-    <div class="card border-danger shadow-sm">
-        <div class="card-header bg-danger text-white">
-            <h4 class="mb-0">⚠️ 確定要刪除此貼文嗎？</h4>
-        </div>
-        <div class="card-body">
-            <p class="text-muted mb-4">刪除後資料將無法復原，包含關聯的圖片與標籤商品都將一併刪除。</p>
 
-            <dl class="row">
-                <dt class="col-sm-3">貼文編號</dt>
-                <dd class="col-sm-9">@Model.CommunityPostId</dd>
+<div class="animated fadeIn mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-                <dt class="col-sm-3">發布使用者</dt>
-                <dd class="col-sm-9">
-                    @(Model.User?.Username ?? Model.UserId.ToString())
-                </dd>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold text-danger">⚠️ 刪除貼文確認</h3>
+                <span class="badge bg-danger fs-6">貼文編號: @Model.CommunityPostId</span>
+            </div>
 
-                <dt class="col-sm-3">發布時間</dt>
-                <dd class="col-sm-9">@Model.PostDate.ToString("yyyy/MM/dd HH:mm")</dd>
+            <!-- ElaAdmin 紅色危險警示卡片 -->
+            <div class="card border-danger shadow-sm mb-4">
+                <div class="card-header bg-danger text-white fw-bold py-3">
+                    <strong class="card-title mb-0">🚨 警告：您即將刪除以下貼文</strong>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning border-0 mb-4" role="alert">
+                        <strong>📌 注意：</strong> 刪除後資料將無法復原，包含關聯的圖片與標籤商品等記錄都將一併刪除。
+                    </div>
 
-                <dt class="col-sm-3">貼文狀態</dt>
-                <dd class="col-sm-9">
-                    <span class="badge bg-success">@Model.Status</span>
-                </dd>
+                    <!-- 資料呈現列表 -->
+                    <div class="p-3 bg-light rounded border mb-4">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3 fw-bold">貼文編號</dt>
+                            <dd class="col-sm-9">#@Model.CommunityPostId</dd>
 
-                <dt class="col-sm-3">貼文內容</dt>
-                <dd class="col-sm-9 text-break">@Model.Content</dd>
-            </dl>
+                            <dt class="col-sm-3 fw-bold">發布使用者</dt>
+                            <dd class="col-sm-9 text-primary fw-bold">
+                                👤 @(Model.User?.Username ?? $"使用者 ID: {Model.UserId}")
+                            </dd>
 
-            <form asp-action="Delete" class="mt-4 d-flex gap-2">
-                <!-- 確保傳送正確的的主鍵 ID 給 Controller -->
-                <input type="hidden" asp-for="CommunityPostId" />
-                <button type="submit" class="btn btn-danger">確認刪除</button>
-                <a asp-action="Index" class="btn btn-secondary">取消回列表</a>
-            </form>
+                            <dt class="col-sm-3 fw-bold">發布時間</dt>
+                            <dd class="col-sm-9">@Model.PostDate.ToString("yyyy/MM/dd HH:mm:ss")</dd>
+
+                            <dt class="col-sm-3 fw-bold">貼文狀態</dt>
+                            <dd class="col-sm-9">
+                                @if (Model.Status?.ToLower() == "public")
+                                {
+                                    <span class="badge bg-success">公開</span>
+                                }
+                                else if (Model.Status?.ToLower() == "check")
+                                {
+                                    <span class="badge bg-warning text-dark">待審核</span>
+                                }
+                                else if (Model.Status?.ToLower() == "hidden")
+                                {
+                                    <span class="badge bg-secondary">隱藏</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark">@(Model.Status ?? "未設定")</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-3 fw-bold">貼文內容</dt>
+                            <dd class="col-sm-9 text-break text-muted">
+                                @Model.Content
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <!-- 表單動作按鈕 -->
+                    <form asp-action="Delete" method="post" class="d-flex gap-2">
+                        <input type="hidden" asp-for="CommunityPostId" />
+                        <button type="submit" class="btn btn-danger px-4">🔥 確認刪除</button>
+                        <a asp-action="Index" class="btn btn-secondary">取消回列表</a>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

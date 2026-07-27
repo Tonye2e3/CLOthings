@@ -1,29 +1,29 @@
 @model IEnumerable<CLOthings.Models.CommunityPost>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "社群貼文管理";
 }
 
 <h1>社群貼文管理</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">➕新增官方貼文</a>
 </p>
 
 <table class="table table-striped table-hover align-middle">
     <thead>
         <tr>
             <th style="white-space: nowrap;">
-                @Html.DisplayNameFor(model => model.UserId)
+                發布者ID
             </th>
             <th style="white-space: nowrap;">
-                @Html.DisplayNameFor(model => model.Content)
+                貼文內容
             </th>
             <th style="white-space: nowrap;">
-                @Html.DisplayNameFor(model => model.PostDate)
+                發布時間
             </th>
             <th style="white-space: nowrap;">
-                @Html.DisplayNameFor(model => model.Status)
+                狀態
             </th>
             <!-- 貼文圖片表頭 -->
             <th style="white-space: nowrap;">
@@ -41,7 +41,7 @@
             <th style="white-space: nowrap;">
                 標籤商品
             </th>
-            <th style ="white-space: nowrap;">動作</th>
+            <th style ="white-space: nowrap;">操作</th>
         </tr>
     </thead>
     <tbody>
@@ -58,9 +58,22 @@
                     @Html.DisplayFor(model => item.PostDate)
                 </td>
                 <td>
-                    <span class="badge @(item.Status?.ToLower() == "public" ? "bg-success" : "bg-secondary")">
-                        @item.Status?.ToLower()
-                    </span>
+                    @if (item.Status?.ToLower() == "public")
+                    {
+                        <span class="badge bg-success">公開</span>
+                    }
+                    else if (item.Status?.ToLower() == "check")
+                    {
+                        <span class="badge bg-warning text-dark">待審核</span>
+                    }
+                    else if (item.Status?.ToLower() == "hidden")
+                    {
+                        <span class="badge bg-secondary">隱藏</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-info text-dark">@(item.Status ?? "未設定")</span>
+                    }
                 </td>
 
                 <!-- 1. 呈現圖片 -->
@@ -113,9 +126,9 @@
                 </td>
 
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.CommunityPostId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.CommunityPostId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.CommunityPostId">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.CommunityPostId" class="btn btn-sm btn-outline-warning">編輯</a>
+                    <a asp-action="Details" asp-route-id="@item.CommunityPostId" class="btn btn-sm btn-outline-info">詳細</a>
+                    <a asp-action="Delete" asp-route-id="@item.CommunityPostId" class="btn btn-sm btn-outline-danger">刪除</a>
                 </td>
             </tr>
         }

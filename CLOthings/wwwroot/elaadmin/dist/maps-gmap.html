@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta http-equiv='X-UA-Compatible' content='ie=edge' />
+    <title>Google Maps - ElaAdmin - ElaAdmin</title>
+    <meta name='description' content='ElaAdmin - Bootstrap 5 Admin Dashboard Template' />
+    
+    <!-- Favicon -->
+    <link rel='apple-touch-icon' sizes='180x180' href='/images/favicon/apple-touch-icon.png' />
+    <link rel='icon' type='image/png' sizes='32x32' href='/images/favicon/favicon-32x32.png' />
+    <link rel='icon' type='image/png' sizes='16x16' href='/images/favicon/favicon-16x16.png' />
+    
+    <!-- Vite CSS Entry Point -->    <style>
+      .map-container {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      .map-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      
+      .map-overlay {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 10;
+        pointer-events: none;
+      }
+      
+      .map-overlay h6 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+      
+      .map-overlay small {
+        color: #666;
+        font-size: 12px;
+      }
+      
+      .location-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+      }
+      
+      .location-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      }
+      
+      .location-info {
+        padding: 15px;
+      }
+      
+      .location-info h6 {
+        color: #333;
+        margin-bottom: 8px;
+      }
+      
+      .location-info p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      
+      .location-stats {
+        display: flex;
+        justify-content: space-around;
+        padding: 15px;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+      }
+      
+      .stat-item {
+        text-align: center;
+      }
+      
+      .stat-item .stat-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #007bff;
+      }
+      
+      .stat-item .stat-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 2px;
+      }
+      
+      .map-style-selector {
+        margin-bottom: 20px;
+      }
+      
+      .style-btn {
+        margin-right: 10px;
+        margin-bottom: 5px;
+      }
+      
+      .map-types-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      
+      .map-type-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+      }
+      
+      .map-type-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
+      
+      .map-type-preview {
+        height: 150px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 48px;
+      }
+      
+      .map-type-info {
+        padding: 15px;
+      }
+      
+      .map-type-info h6 {
+        margin-bottom: 5px;
+        color: #333;
+      }
+      
+      .map-type-info p {
+        margin: 0;
+        font-size: 13px;
+        color: #666;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/js/maps-gmap-BY4V-2aO.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/js/main-D9UhA9d6.js">
+    <link rel="modulepreload" crossorigin href="./assets/js/preload-helper-D9Z9MdNV.js">
+    <link rel="stylesheet" crossorigin href="./assets/css/main-QHWFdn9T.css">
+  </head>
+
+  <body>
+    <!-- Left Panel -->
+    <aside id='left-panel' class='left-panel'>
+      <!-- Navigation Menu -->
+      <div class='sidebar-menu'>
+        <nav class='nav-menu'>
+          <!-- Dashboard -->
+          <div class='nav-item'>
+            <a href='index.html' class='nav-link active'>
+              <i class='nav-icon fas fa-tachometer-alt'></i>
+              <span class='nav-text'>Dashboard</span>
+            </a>
+          </div>
+    
+          <!-- UI Elements Section -->
+          <div class='nav-section'>
+            <span class='nav-section-title'>UI ELEMENTS</span>
+          </div>
+    
+          <!-- Components Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='components'>
+              <i class='nav-icon fas fa-puzzle-piece'></i>
+              <span class='nav-text'>Components</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='components-menu'>
+              <a href='ui-buttons.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Buttons</span>
+              </a>
+              <a href='ui-badges.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Badges</span>
+              </a>
+              <a href='ui-tabs.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Tabs</span>
+              </a>
+              <a href='ui-cards.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Cards</span>
+              </a>
+              <a href='ui-alerts.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Alerts</span>
+              </a>
+              <a href='ui-progressbar.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Progress Bars</span>
+              </a>
+              <a href='ui-modals.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Modals</span>
+              </a>
+              <a href='ui-switches.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Switches</span>
+              </a>
+              <a href='ui-grids.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Grids</span>
+              </a>
+              <a href='ui-typgraphy.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Typography</span>
+              </a>
+              <a href='ui-sweetalert.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>SweetAlert2</span>
+              </a>
+            </div>
+          </div>
+    
+          <!-- Tables Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='tables'>
+              <i class='nav-icon fas fa-table'></i>
+              <span class='nav-text'>Tables</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='tables-menu'>
+              <a href='tables-basic.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Basic Table</span>
+              </a>
+              <a href='tables-data.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Data Table</span>
+              </a>
+            </div>
+          </div>
+    
+          <!-- Forms Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='forms'>
+              <i class='nav-icon fas fa-edit'></i>
+              <span class='nav-text'>Forms</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='forms-menu'>
+              <a href='forms-basic.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Basic Form</span>
+              </a>
+              <a href='forms-advanced.html' class='submenu-link'>
+                <i class='submenu-icon far fa-circle'></i>
+                <span>Advanced Form</span>
+              </a>
+            </div>
+          </div>
+    
+          <!-- Icons Section -->
+          <div class='nav-section'>
+            <span class='nav-section-title'>ICONS & CHARTS</span>
+          </div>
+    
+          <!-- Icons Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='icons'>
+              <i class='nav-icon fas fa-icons'></i>
+              <span class='nav-text'>Icons</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='icons-menu'>
+              <a href='font-fontawesome.html' class='submenu-link'>
+                <i class='submenu-icon fab fa-font-awesome'></i>
+                <span>Font Awesome</span>
+              </a>
+              <a href='font-icons.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-icons'></i>
+                <span>Modern Icons</span>
+              </a>
+            </div>
+          </div>
+    
+          <!-- Widgets -->
+          <div class='nav-item'>
+            <a href='widgets.html' class='nav-link'>
+              <i class='nav-icon fas fa-th-large'></i>
+              <span class='nav-text'>Widgets</span>
+            </a>
+          </div>
+    
+          <!-- Charts Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='charts'>
+              <i class='nav-icon fas fa-chart-bar'></i>
+              <span class='nav-text'>Charts</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='charts-menu'>
+              <a href='charts-chartjs.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-chart-line'></i>
+                <span>Chart JS</span>
+              </a>
+            </div>
+          </div>
+    
+          <!-- Maps Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='maps'>
+              <i class='nav-icon fas fa-map-marked-alt'></i>
+              <span class='nav-text'>Maps</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='maps-menu'>
+              <a href='maps-gmap.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-map'></i>
+                <span>Google Maps</span>
+              </a>
+              <a href='maps-vector.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-vector-square'></i>
+                <span>Vector Maps</span>
+              </a>
+            </div>
+          </div>
+    
+          <!-- Extras Section -->
+          <div class='nav-section'>
+            <span class='nav-section-title'>EXTRAS</span>
+          </div>
+    
+          <!-- Pages Dropdown -->
+          <div class='nav-item has-submenu'>
+            <a href='#' class='nav-link' data-menu='pages'>
+              <i class='nav-icon fas fa-file-alt'></i>
+              <span class='nav-text'>Pages</span>
+              <i class='nav-arrow fas fa-chevron-right'></i>
+            </a>
+            <div class='nav-submenu' id='pages-menu'>
+              <a href='page-login.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-sign-in-alt'></i>
+                <span>Login</span>
+              </a>
+              <a href='page-register.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-user-plus'></i>
+                <span>Register</span>
+              </a>
+              <a href='pages-forget.html' class='submenu-link'>
+                <i class='submenu-icon fas fa-key'></i>
+                <span>Forget Password</span>
+              </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </aside>
+    <!-- End Left Panel -->    <!-- Modern Header with Bootstrap 5 -->
+    <header style='position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 1030;'>
+      <div style='display: flex; align-items: center; gap: 15px;'>
+        <a href='index.html' style='display: flex; align-items: center; gap: 8px; margin-right: 10px; text-decoration: none;'>
+          <i class='fas fa-layer-group' style='font-size: 24px; color: #007bff; background: rgba(0, 123, 255, 0.1); padding: 8px; border-radius: 8px;'></i>
+          <span style='font-size: 20px; font-weight: 700; color: #2c3e50; letter-spacing: -0.5px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;'>ElaAdmin</span>
+        </a>
+        <button
+          id='sidebar-toggle'
+          style='background: none; border: none; font-size: 18px; cursor: pointer; padding: 8px; color: #666;'
+        >
+          <i class='fa fa-bars'></i>
+        </button>
+      </div>
+      
+      <div style='display: flex; align-items: center; gap: 10px;'>
+        <!-- Search Box -->
+        <div id="search-box" class="search-box" style="position: relative;">
+          <button 
+            id="search-toggle"
+            style='background: none; border: none; padding: 8px 12px; cursor: pointer; color: #666; border-radius: 4px;'
+            type="button"
+          >
+            <i class='fa fa-search'></i>
+          </button>
+          <div class="search-container" style="position: absolute; right: 0; top: 100%; margin-top: 10px; background: white; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 15px; width: 350px; display: none; z-index: 1040;">
+            <div class="input-group">
+              <input 
+                type="text" 
+                id="search-input"
+                class="form-control" 
+                placeholder="Search for pages, users, or features..."
+                style="border-radius: 6px 0 0 6px;"
+              >
+              <button class="btn btn-primary" type="button" style="border-radius: 0 6px 6px 0;">
+                <i class="fas fa-search"></i>
+              </button>
+              <button 
+                id="close-search"
+                class="btn btn-link position-absolute" 
+                type="button"
+                style="right: 50px; top: 50%; transform: translateY(-50%); z-index: 10; color: #999; padding: 0 5px;"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div class="search-suggestions mt-3" style="display: none;">
+              <h6 class="text-muted small mb-2">Quick Links</h6>
+              <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action py-2 px-0 border-0">
+                  <i class="fas fa-chart-line text-primary me-2"></i> Dashboard
+                </a>
+                <a href="ui-cards.html" class="list-group-item list-group-item-action py-2 px-0 border-0">
+                  <i class="fas fa-layer-group text-info me-2"></i> UI Components
+                </a>
+                <a href="forms-basic.html" class="list-group-item list-group-item-action py-2 px-0 border-0">
+                  <i class="fas fa-edit text-success me-2"></i> Forms
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notifications Dropdown -->
+        <div class="dropdown">
+          <button
+            style='background: none; border: none; padding: 8px 12px; cursor: pointer; position: relative; color: #666; border-radius: 4px;'
+            type="button"
+            id="notificationDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class='fa fa-bell'></i>
+            <span style='position: absolute; top: 0; right: 0; background: #dc3545; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; min-width: 16px; text-align: center;'>3</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 320px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdown">
+            <div class="dropdown-header bg-white border-bottom">
+              <div class="d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-semibold">Notifications</h6>
+                <a href="#" class="text-muted small text-decoration-none">Clear all</a>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                  <div class="rounded-circle bg-success bg-opacity-10 p-2">
+                    <i class="fas fa-check text-success"></i>
+                  </div>
+                </div>
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <h6 class="mb-1 fs-6 text-wrap">System Update Complete</h6>
+                  <p class="mb-1 text-muted small text-wrap">Your system has been successfully updated to v3.0</p>
+                  <small class="text-muted"><i class="far fa-clock me-1"></i>2 mins ago</small>
+                </div>
+              </div>
+            </a>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                  <div class="rounded-circle bg-primary bg-opacity-10 p-2">
+                    <i class="fas fa-user-plus text-primary"></i>
+                  </div>
+                </div>
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <h6 class="mb-1 fs-6 text-wrap">New User Registration</h6>
+                  <p class="mb-1 text-muted small text-wrap">John Doe just created an account</p>
+                  <small class="text-muted"><i class="far fa-clock me-1"></i>1 hour ago</small>
+                </div>
+              </div>
+            </a>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                  <div class="rounded-circle bg-warning bg-opacity-10 p-2">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                  </div>
+                </div>
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <h6 class="mb-1 fs-6 text-wrap">Server Alert</h6>
+                  <p class="mb-1 text-muted small text-wrap">CPU usage is above 80% threshold</p>
+                  <small class="text-muted"><i class="far fa-clock me-1"></i>3 hours ago</small>
+                </div>
+              </div>
+            </a>
+            
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item text-center py-2 text-primary" href="#">
+              View all notifications <i class="fas fa-arrow-right ms-1 small"></i>
+            </a>
+          </div>
+        </div>
+    
+        <!-- Messages Dropdown -->
+        <div class="dropdown">
+          <button
+            style='background: none; border: none; padding: 8px 12px; cursor: pointer; position: relative; color: #666; border-radius: 4px;'
+            type="button"
+            id="messageDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class='fa fa-envelope'></i>
+            <span style='position: absolute; top: 0; right: 0; background: #007bff; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; min-width: 16px; text-align: center;'>4</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 360px; max-height: 400px; overflow-y: auto;" aria-labelledby="messageDropdown">
+            <div class="dropdown-header bg-white border-bottom">
+              <div class="d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-semibold">Messages</h6>
+                <a href="#" class="text-muted small text-decoration-none">Mark all read</a>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <img src="data:image/jpeg;base64,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" alt="User" class="rounded-circle flex-shrink-0" style="width: 40px; height: 40px; object-fit: cover;">
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <h6 class="mb-0 fs-6 text-wrap">Sarah Johnson</h6>
+                    <small class="text-muted text-nowrap ms-2">5 min</small>
+                  </div>
+                  <p class="mb-0 text-muted small text-truncate">Hey! I've finished the design mockups for the new dashboard...</p>
+                  <div class="mt-1">
+                    <span class="badge bg-primary bg-opacity-10 text-primary me-1">Design</span>
+                    <span class="badge bg-success bg-opacity-10 text-success">Urgent</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <img src="data:image/jpeg;base64,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" alt="User" class="rounded-circle flex-shrink-0" style="width: 40px; height: 40px; object-fit: cover;">
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <h6 class="mb-0 fs-6 text-wrap">Mike Wilson</h6>
+                    <small class="text-muted text-nowrap ms-2">2 hours</small>
+                  </div>
+                  <p class="mb-0 text-muted small text-truncate">Can we schedule a meeting to discuss the project timeline?</p>
+                  <div class="mt-1">
+                    <span class="badge bg-info bg-opacity-10 text-info">Meeting</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <img src="data:image/jpeg;base64,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" alt="User" class="rounded-circle flex-shrink-0" style="width: 40px; height: 40px; object-fit: cover;">
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <h6 class="mb-0 fs-6 text-wrap">Emma Davis</h6>
+                    <small class="text-muted text-nowrap ms-2">1 day</small>
+                  </div>
+                  <p class="mb-0 text-muted small text-truncate">The client loved the presentation! Great work team!</p>
+                  <div class="mt-1">
+                    <span class="badge bg-success bg-opacity-10 text-success">Client</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <a class="dropdown-item py-3" href="#">
+              <div class="d-flex align-items-start">
+                <img src="data:image/jpeg;base64,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" alt="User" class="rounded-circle flex-shrink-0" style="width: 40px; height: 40px; object-fit: cover;">
+                <div class="flex-grow-1 ms-3" style="min-width: 0;">
+                  <div class="d-flex justify-content-between align-items-start mb-1">
+                    <h6 class="mb-0 fs-6 text-wrap">Alex Chen</h6>
+                    <small class="text-muted text-nowrap ms-2">2 days</small>
+                  </div>
+                  <p class="mb-0 text-muted small text-truncate">I've pushed the latest updates to the repository</p>
+                  <div class="mt-1">
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary">Development</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item text-center py-2 text-primary" href="#">
+              View all messages <i class="fas fa-arrow-right ms-1 small"></i>
+            </a>
+          </div>
+        </div>
+    
+        <!-- User Profile Dropdown -->
+        <div class="dropdown">
+          <button
+            style='background: none; border: none; padding: 8px; cursor: pointer; color: #666; border-radius: 4px;'
+            type="button"
+            id="userDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              src='./assets/images/admin-CImwvrwd.jpg'
+              alt='User'
+              style='width: 32px; height: 32px; border-radius: 50%;'
+            />
+          </button>
+          <div class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="width: 260px;" aria-labelledby="userDropdown">
+            <div class="p-3 bg-white border-bottom">
+              <div class="d-flex align-items-center">
+                <img src="./assets/images/admin-CImwvrwd.jpg" alt="Profile" class="rounded-circle flex-shrink-0" style="width: 45px; height: 45px; object-fit: cover;">
+                <div class="ms-3" style="min-width: 0;">
+                  <h6 class="mb-0 text-wrap" style="font-size: 14px;">John Doe</h6>
+                  <small class="text-muted" style="font-size: 12px;">Administrator</small>
+                  <div class="mt-1">
+                    <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 10px;">
+                      <i class="fas fa-circle" style="font-size: 5px;"></i> Online
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <a class="dropdown-item py-2 d-flex align-items-center" href="#" style="font-size: 13px;">
+              <i class="fas fa-user text-primary me-2" style="width: 16px; text-align: center; font-size: 12px;"></i>
+              <span>My Profile</span>
+            </a>
+            
+            <a class="dropdown-item py-2 d-flex align-items-center" href="#" style="font-size: 13px;">
+              <i class="fas fa-cog text-primary me-2" style="width: 16px; text-align: center; font-size: 12px;"></i>
+              <span>Account Settings</span>
+            </a>
+            
+            <a class="dropdown-item py-2 d-flex align-items-center justify-content-between" href="#" style="font-size: 13px;">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-bell text-primary me-2" style="width: 16px; text-align: center; font-size: 12px;"></i>
+                <span>Notifications</span>
+              </div>
+              <span class="badge bg-danger" style="font-size: 10px;">12</span>
+            </a>
+            
+            <a class="dropdown-item py-2 d-flex align-items-center justify-content-between" href="#" style="font-size: 13px;">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-tasks text-primary me-2" style="width: 16px; text-align: center; font-size: 12px;"></i>
+                <span>My Tasks</span>
+              </div>
+              <span class="badge bg-primary" style="font-size: 10px;">5</span>
+            </a>
+            
+            <div class="dropdown-divider my-1"></div>
+            
+            <a class="dropdown-item py-2 d-flex align-items-center" href="#" style="font-size: 13px;">
+              <i class="fas fa-lock text-warning me-2" style="width: 16px; text-align: center; font-size: 12px;"></i>
+              <span>Lock Screen</span>
+            </a>
+            
+            <a class="dropdown-item py-2 d-flex align-items-center" href="#" style="font-size: 13px;">
+              <i class="fas fa-sign-out-alt text-danger me-2" style="width: 16px; text-align: center; font-size: 12px;"></i>
+              <span>Logout</span>
+            </a>
+            
+            <div class="dropdown-divider mt-1 mb-0"></div>
+            <div class="p-2 bg-white">
+              <div class="row g-2 text-center">
+                <div class="col-4">
+                  <small class="text-muted d-block" style="font-size: 10px;">Storage</small>
+                  <div class="progress mt-1" style="height: 3px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 65%"></div>
+                  </div>
+                  <small class="text-muted" style="font-size: 10px;">65%</small>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted d-block" style="font-size: 10px;">Projects</small>
+                  <strong class="d-block" style="font-size: 12px;">12</strong>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted d-block" style="font-size: 10px;">Tasks</small>
+                  <strong class="d-block" style="font-size: 12px;">34</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div id="right-panel" class="right-panel main-content">
+      <div class="content">
+        <div class="container-fluid">
+          <!-- Page Header -->
+          <div class="row mb-4">
+            <div class="col-sm-6">
+              <h4 class="page-title">Google Maps</h4>
+              <p class="text-muted">Simple embedded Google Maps for location preview</p>
+            </div>
+            <div class="col-sm-6">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                  <li class="breadcrumb-item"><a href="#">Maps</a></li>
+                  <li class="breadcrumb-item active">Google Maps</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Map Types Overview -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <h5 class="mb-3">Available Map Types</h5>
+              <div class="map-types-grid">
+                <div class="map-type-card">
+                  <div class="map-type-preview">
+                    <i class="fas fa-map"></i>
+                  </div>
+                  <div class="map-type-info">
+                    <h6>Standard Map</h6>
+                    <p>Default road map view with street names and landmarks</p>
+                  </div>
+                </div>
+                <div class="map-type-card">
+                  <div class="map-type-preview" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-satellite"></i>
+                  </div>
+                  <div class="map-type-info">
+                    <h6>Satellite View</h6>
+                    <p>High-resolution aerial imagery</p>
+                  </div>
+                </div>
+                <div class="map-type-card">
+                  <div class="map-type-preview" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-street-view"></i>
+                  </div>
+                  <div class="map-type-info">
+                    <h6>Street View</h6>
+                    <p>360-degree street-level imagery</p>
+                  </div>
+                </div>
+                <div class="map-type-card">
+                  <div class="map-type-preview" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <i class="fas fa-directions"></i>
+                  </div>
+                  <div class="map-type-info">
+                    <h6>Directions</h6>
+                    <p>Route planning and navigation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Office Location -->
+          <div class="row mb-4">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="fas fa-building me-2"></i>Main Office - New York</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="map-container">
+                    <div class="map-overlay">
+                      <h6>Empire State Building</h6>
+                      <small>350 5th Ave, New York, NY 10118</small>
+                    </div>
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1845994028093!2d-73.98773492346901!3d40.74844097138822!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1702654321000!5m2!1sen!2sus"
+                      allowfullscreen=""
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multiple Office Locations -->
+          <div class="row mb-4">
+            <div class="col-lg-6">
+              <div class="card location-card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>San Francisco Office</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="map-container" style="height: 300px;">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.0194872831976!2d-122.4216584!3d37.7749295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085809c6c8f4459%3A0xb10ed6d9b5050fa5!2sTwitter%20HQ!5e0!3m2!1sen!2sus!4v1702654321001!5m2!1sen!2sus"
+                      allowfullscreen=""
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                  </div>
+                  <div class="location-info">
+                    <h6>West Coast Headquarters</h6>
+                    <p><i class="fas fa-map-marker-alt me-2 text-primary"></i>1355 Market St, San Francisco, CA 94103</p>
+                    <p><i class="fas fa-phone me-2 text-success"></i>(415) 555-0123</p>
+                    <p><i class="fas fa-envelope me-2 text-info"></i>sf-office@company.com</p>
+                  </div>
+                  <div class="location-stats">
+                    <div class="stat-item">
+                      <div class="stat-value">127</div>
+                      <div class="stat-label">Employees</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">24/7</div>
+                      <div class="stat-label">Support</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">4.8</div>
+                      <div class="stat-label">Rating</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-6">
+              <div class="card location-card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>London Office</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="map-container" style="height: 300px;">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2483.292104334!2d-0.1276474!3d51.5073509!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487604ce37bbdb95%3A0x7ba8f4ef8f2487f7!2sBig%20Ben!5e0!3m2!1sen!2suk!4v1702654321002!5m2!1sen!2suk"
+                      allowfullscreen=""
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                  </div>
+                  <div class="location-info">
+                    <h6>European Headquarters</h6>
+                    <p><i class="fas fa-map-marker-alt me-2 text-primary"></i>Westminster, London SW1A 0AA, UK</p>
+                    <p><i class="fas fa-phone me-2 text-success"></i>+44 20 7219 4272</p>
+                    <p><i class="fas fa-envelope me-2 text-info"></i>london-office@company.com</p>
+                  </div>
+                  <div class="location-stats">
+                    <div class="stat-item">
+                      <div class="stat-value">89</div>
+                      <div class="stat-label">Employees</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">9-6</div>
+                      <div class="stat-label">Hours</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">4.9</div>
+                      <div class="stat-label">Rating</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Satellite View -->
+          <div class="row mb-4">
+            <div class="col-lg-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="fas fa-satellite me-2"></i>Tokyo Office - Satellite View</h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="map-container">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3240.827853398534!2d139.76454547613673!3d35.68123617258408!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188bfbd89f700b%3A0x277c49ba34ed38!2sTokyo%20Station!5e1!3m2!1sen!2sjp!4v1702654321003!5m2!1sen!2sjp"
+                      allowfullscreen=""
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-lg-4">
+              <div class="card h-100">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Location Details</h5>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-3">Tokyo Station</h6>
+                  <ul class="list-unstyled">
+                    <li class="mb-2">
+                      <i class="fas fa-globe me-2 text-primary"></i>
+                      <strong>Country:</strong> Japan
+                    </li>
+                    <li class="mb-2">
+                      <i class="fas fa-city me-2 text-info"></i>
+                      <strong>City:</strong> Tokyo
+                    </li>
+                    <li class="mb-2">
+                      <i class="fas fa-map me-2 text-success"></i>
+                      <strong>District:</strong> Chiyoda
+                    </li>
+                    <li class="mb-2">
+                      <i class="fas fa-compass me-2 text-warning"></i>
+                      <strong>Coordinates:</strong> 35.6812° N, 139.7671° E
+                    </li>
+                    <li class="mb-2">
+                      <i class="fas fa-users me-2 text-danger"></i>
+                      <strong>Daily Visitors:</strong> ~500,000
+                    </li>
+                  </ul>
+                  
+                  <hr>
+                  
+                  <h6 class="mb-3">Transportation Hub</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary">Shinkansen</span>
+                    <span class="badge bg-success">JR Lines</span>
+                    <span class="badge bg-info">Metro</span>
+                    <span class="badge bg-warning">Bus Terminal</span>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <small class="text-muted">One of the busiest railway stations in the world</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Directions Map -->
+          <div class="row mb-4">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-header">
+                  <h5 class="mb-0"><i class="fas fa-route me-2"></i>Directions: San Francisco to Los Angeles</h5>
+                </div>
+                <div class="card-body">
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <div class="d-flex align-items-center">
+                        <div class="me-3">
+                          <i class="fas fa-map-marker-alt fa-2x text-success"></i>
+                        </div>
+                        <div>
+                          <small class="text-muted">Starting Point</small>
+                          <h6 class="mb-0">San Francisco, CA</h6>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="d-flex align-items-center justify-content-center">
+                        <div class="text-center">
+                          <i class="fas fa-car fa-2x text-primary mb-2"></i>
+                          <div><small>Distance: 382 miles</small></div>
+                          <div><small>Duration: ~6 hours</small></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="d-flex align-items-center justify-content-end">
+                        <div class="text-end me-3">
+                          <small class="text-muted">Destination</small>
+                          <h6 class="mb-0">Los Angeles, CA</h6>
+                        </div>
+                        <div>
+                          <i class="fas fa-map-marker-alt fa-2x text-danger"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="map-container">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d3238830.5949032!2d-121.48821850000001!3d36.13780285!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x80859a6d00690021%3A0x4a501367f076adff!2sSan%20Francisco%2C%20CA!3m2!1d37.7749295!2d-122.4194155!4m5!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA!3m2!1d34.0522342!2d-118.2436849!5e0!3m2!1sen!2sus!4v1702654321004!5m2!1sen!2sus"
+                      allowfullscreen=""
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map Options Info -->
+          <div class="row mb-4">
+            <div class="col-lg-12">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>About These Maps</h5>
+                  <p class="mb-2">These maps are using Google Maps Embed API which provides:</p>
+                  <ul class="mb-3">
+                    <li>Free usage for basic embedding (no API key required)</li>
+                    <li>Interactive maps with zoom and pan controls</li>
+                    <li>Street view access where available</li>
+                    <li>Automatic updates with latest map data</li>
+                    <li>Mobile responsive design</li>
+                  </ul>
+                  <p class="mb-0">
+                    <strong>Note:</strong> For advanced features like custom markers, drawing tools, or real-time tracking, 
+                    you would need to implement the full Google Maps JavaScript API with an API key.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <footer class='footer mt-auto py-3'>
+        <div class='container-fluid'>
+          <div class='row'>
+            <div class='col-md-6'>
+              <p class='mb-0 text-muted'>
+                Copyright &copy;
+                2026
+                ElaAdmin. All rights reserved.
+              </p>
+            </div>
+            <div class='col-md-6 text-md-end'>
+              <p class='mb-0 text-muted'>
+                Designed by
+                <a href='https://colorlib.com' target='_blank' class='text-primary'>Colorlib</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>    </div>
+
+    <!-- Bootstrap 5 JavaScript via Vite -->
+    
+    <!-- Page-specific module loading -->  </body>
+</html>

@@ -4,120 +4,126 @@
     ViewData["Title"] = "Edit";
 }
 
-<div class="container mt-4" style="max-width: 800px;">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>⚙️ 貼文審核與狀態管理</h2>
-        <span class="badge bg-secondary fs-6">Post ID: @Model.CommunityPostId</span>
-    </div>
+<!-- 套用 ElaAdmin 標準動畫與格線容器 -->
+<div class="animated fadeIn mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
 
-    <!-- 1. 使用者原始貼文內容（唯讀區塊，維護資料真實性與防止越權） -->
-    <div class="card mb-4 border-0 shadow-sm bg-light">
-        <div class="card-body">
-            <h5 class="fw-bold text-secondary mb-3">📌 原始貼文資訊（唯讀）</h5>
-
-            <div class="row mb-2">
-                <div class="col-md-6">
-                    <strong>發布使用者：</strong>
-                    <span class="text-primary">👤 @(Model.User?.Username ?? $"使用者 ID: {Model.UserId}")</span>
-                </div>
-                <div class="col-md-6">
-                    <strong>發布時間：</strong> @Model.PostDate.ToString("yyyy/MM/dd HH:mm:ss")
-                </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="fw-bold">⚙️ 貼文審核與狀態管理</h3>
+                <span class="badge bg-secondary fs-6">Post ID: @Model.CommunityPostId</span>
             </div>
 
-            <div class="mb-3">
-                <strong>貼文內文：</strong>
-                <div class="p-3 bg-white rounded border mt-1 text-break">
-                    @Model.Content
+            <!-- 卡片 1：原始貼文內容（唯讀區塊） -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold py-3">
+                    <strong class="card-title mb-0">📌 原始貼文資訊（唯讀）</strong>
                 </div>
-            </div>
-
-            <!-- 貼文圖片預覽 -->
-            @if (Model.PostImages != null && Model.PostImages.Any())
-            {
-                <div class="mb-2">
-                    <strong>貼文圖片：</strong>
-                    <div class="d-flex gap-2 flex-wrap mt-2">
-                        @foreach (var img in Model.PostImages)
-                        {
-                            <img src="@img.ImageFileName" class="rounded border" style="width: 100px; height: 100px; object-fit: cover;" />
-                        }
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="mb-2">
-                    <strong>貼文圖片：</strong> <span class="text-muted">（無圖片）</span>
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- 2. 管理者處置表單 -->
-    <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="CommunityPostId" />
-
-        <div class="card mb-4 border-primary shadow-sm">
-            <div class="card-header bg-primary text-white fw-bold">
-                🛠️ 管理者處置設定
-            </div>
-            <div class="card-body">
-
-                <!-- 文章狀態切換 -->
-                <div class="mb-4">
-                    <label class="form-label fw-bold">文章顯示狀態 (Status)</label>
-                    <select asp-for="Status" class="form-select form-select-lg">
-                        <option value="public">public (公開顯示)</option>
-                        <option value="hidden">hidden (違規隱藏 / 下架)</option>
-                        <option value="check">check (審核中)</option>
-                    </select>
-                    <div class="form-text text-muted">
-                        若貼文包含違規或爭議言論，請將狀態切換為 <code>hidden</code>，前台將不再顯示此貼文。
-                    </div>
-                </div>
-
-                <!-- 標籤商品修正 -->
-                <div class="mb-3">
-                    <label class="form-label fw-bold">協助標籤商品 (Tag Products)</label>
-                    <div class="p-3 border rounded bg-light" style="max-height: 180px; overflow-y: auto;">
-                        <div class="row g-2">
-                            @if (ViewBag.Products != null)
-                            {
-                                foreach (var product in ViewBag.Products)
-                                {
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                   name="selectedProductIds"
-                                                   value="@product.ProductId"
-                                                   id="product_@product.ProductId"
-                                            @(product.IsSelected ? "checked" : "") />
-                                            <label class="form-check-label" for="product_@product.ProductId">
-                                                @product.ProductName
-                                            </label>
-                                        </div>
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <span class="text-muted">（無商品可選）</span>
-                            }
+                <div class="card-body bg-light">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>發布使用者：</strong>
+                            <span class="text-primary fw-bold">👤 @(Model.User?.Username ?? $"使用者 ID: {Model.UserId}")</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>發布時間：</strong> @Model.PostDate.ToString("yyyy/MM/dd HH:mm:ss")
                         </div>
                     </div>
-                    <div class="form-text text-muted">管理者可在此協助勾選並補上正確的關聯商品標籤。</div>
+
+                    <div class="mb-3">
+                        <strong>貼文內文：</strong>
+                        <div class="p-3 bg-white rounded border mt-1 text-break">
+                            @Model.Content
+                        </div>
+                    </div>
+
+                    <!-- 貼文圖片預覽 -->
+                    @if (Model.PostImages != null && Model.PostImages.Any())
+                    {
+                        <div>
+                            <strong>貼文圖片：</strong>
+                            <div class="d-flex gap-2 flex-wrap mt-2">
+                                @foreach (var img in Model.PostImages)
+                                {
+                                    <img src="@img.ImageFileName" class="rounded border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;" />
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <strong>貼文圖片：</strong> <span class="text-muted">（無圖片）</span>
+                        </div>
+                    }
                 </div>
-
             </div>
-        </div>
 
-        <!-- 按鈕區 -->
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-primary px-4">💾 儲存變更</button>
-            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+            <!-- 卡片 2：管理者處置表單 -->
+            <div class="card border-primary shadow-sm mb-4">
+                <div class="card-header bg-primary text-white fw-bold py-3">
+                    <strong class="card-title mb-0">🛠️ 管理者處置設定</strong>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="CommunityPostId" />
+
+                        <!-- 文章狀態切換 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">文章顯示狀態 (Status)</label>
+                            <select asp-for="Status" class="form-select form-select-lg">
+                                <option value="public">public (公開顯示)</option>
+                                <option value="hidden">hidden (違規隱藏 / 下架)</option>
+                                <option value="check">check (審核中)</option>
+                            </select>
+                            <div class="form-text text-muted mt-1">
+                                若貼文包含違規或爭議言論，請將狀態切換為 <code>hidden</code>，前台將不再顯示此貼文。
+                            </div>
+                        </div>
+
+                        <!-- 標籤商品修正 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">協助標籤商品 (Tag Products)</label>
+                            <div class="p-3 border rounded bg-light" style="max-height: 180px; overflow-y: auto;">
+                                <div class="row g-2">
+                                    @if (ViewBag.Products != null)
+                                    {
+                                        foreach (var product in ViewBag.Products)
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="selectedProductIds"
+                                                           value="@product.ProductId"
+                                                           id="product_@product.ProductId"
+                                                    @(product.IsSelected ? "checked" : "") />
+                                                    <label class="form-check-label" for="product_@product.ProductId">
+                                                        @product.ProductName
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">（無商品可選）</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-text text-muted mt-1">管理者可在此協助勾選並補上正確的關聯商品標籤。</div>
+                        </div>
+
+                        <!-- 按鈕區 -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">💾 儲存變更</button>
+                            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
