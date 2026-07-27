@@ -1,5 +1,4 @@
 ﻿using CLOthings.Enums;
-using Microsoft.AspNetCore.Identity.Data;
 using System.ComponentModel.DataAnnotations;
 
 namespace CLOthings.ViewModels
@@ -18,8 +17,8 @@ namespace CLOthings.ViewModels
         public string Email { get; set; }
 
         [Required(ErrorMessage = "電話號碼必填")]
-        [StringLength(10)]
-        [RegularExpression(@"^09\d{8}$", ErrorMessage = "請輸入正確的台灣手機號碼")]
+        [StringLength(10, ErrorMessage = "請輸入正確的手機號碼")]
+        [RegularExpression(@"^09\d{8}$", ErrorMessage = "請輸入正確的手機號碼")]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "請選擇使用者類型")]

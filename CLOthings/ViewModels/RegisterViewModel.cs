@@ -19,6 +19,7 @@ namespace CLOthings.ViewModels
         public string Email { get; set; }
 
         [Required(ErrorMessage = "必田")]
+        [StringLength(10, ErrorMessage = "請輸入正確的手機號碼")]
         [RegularExpression(@"^09\d{8}$", ErrorMessage = "請輸入正確的手機號碼")]
         public string Phone { get; set; }
 
