@@ -270,7 +270,7 @@ public class UserProfileController : Controller
             await _context.SaveChangesAsync();
         }
 
-        return View("Details", profile);
+        return View("Edit", profile);
     }
 
 }
