@@ -27,8 +27,15 @@
                         <!-- 1. 發布帳號 (鎖定為管理員，唯讀) -->
                         <div class="mb-4">
                             <label class="form-label fw-bold">發布帳號</label>
-                            <input type="text" class="form-control bg-light" value="@ViewBag.AdminUserName" readonly />
-                            <input type="hidden" name="UserId" value="@ViewBag.AdminUserId" />
+                            <!-- 顯示用的唯讀欄位，加 ?? 防呆 -->
+                            <input type="text"
+                                   class="form-control bg-light"
+                                   value="@(ViewBag.AdminUserName ?? "superAdmin (官方管理員)")"
+                                   readonly />
+
+                            <!-- 實際回傳給 Controller 的 UserId 隱藏欄位 -->
+                            <input type="hidden" asp-for="UserId" value="@(ViewBag.AdminUserId ?? 17)" />
+
                             <div class="form-text text-muted mt-1">後台新增之貼文將統一以官方管理員身份發布。</div>
                         </div>
 

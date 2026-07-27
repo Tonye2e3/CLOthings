@@ -95,11 +95,20 @@ public class CommunityPostController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("UserId,Content,Status")] CommunityPost communitypost, List<IFormFile> imageFiles, List<int> selectedProductIds)
     {
+        // 1. 如果前端沒傳 UserId (例如 0)，預設給一個管理員 ID (請依你的資料庫實際 ID 調整，例如 17)
+        if (communitypost.UserId == 0)
+        {
+            communitypost.UserId = 17;
+        }
+
         // 後端自動寫入發文時間
         communitypost.PostDate = DateTime.Now;
 
-        // 不再寫死 UserId，讓它讀取前端選取的 UserId
-        // 移除：ModelState.Remove("UserId");
+        // 檢查 Content 是否為空白、null，或是只輸入空格/換行
+        if (string.IsNullOrWhiteSpace(communitypost.Content))
+        {
+            ModelState.AddModelError("Content", "貼文內容不能為空白！");
+        }
 
 
         // 清除 UserId 的驗證狀態（避免 ModelState 誤判）

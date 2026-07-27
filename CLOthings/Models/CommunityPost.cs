@@ -2,6 +2,7 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CLOthings.Models;
 
@@ -11,6 +12,8 @@ public partial class CommunityPost
 
     public int UserId { get; set; }
 
+    [Required(ErrorMessage = "貼文內容不能為空白！")]
+    [Display(Name = "貼文內容")]
     public string Content { get; set; }
 
     public DateTime PostDate { get; set; }
