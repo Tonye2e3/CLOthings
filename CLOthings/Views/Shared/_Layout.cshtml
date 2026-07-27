@@ -1,100 +1,159 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-Hant">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CLOthings</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - CLOthings Admin</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CLOthings.styles.css" asp-append-version="true" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --sidebar-w: 260px; }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background: #f6f6f7; }
+        .admin-sidebar { width: var(--sidebar-w); background: #111113; color: #fff; position: fixed; top: 0; left: 0; bottom: 0; z-index: 1040; display: flex; flex-direction: column; }
+        .admin-main { margin-left: var(--sidebar-w); min-height: 100vh; display: flex; flex-direction: column; }
+        .sidebar-logo { height: 64px; border-bottom: 1px solid #222; display: flex; align-items: center; padding: 0 20px; font-weight: 800; letter-spacing: -0.04em; }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; }
+        .sidebar-section { font-size: 11px; letter-spacing: 0.12em; color: #6b7280; padding: 16px 12px 8px; font-weight: 600; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #a1a1aa; text-decoration: none; font-size: 14px; font-weight: 500; transition: all .15s; }
+        .sidebar-link:hover { background: #1f1f23; color: #fff; }
+        .sidebar-link.active { background: #fff; color: #111; }
+        .sidebar-link svg { width: 18px; height: 18px; }
+        .topbar { height: 64px; background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 10; }
+        .content-wrap { padding: 28px; flex: 1; }
+        .card-admin { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; }
+        /* 修復：_LoginPartial 在黑底上看不到的問題 */
+        .admin-sidebar a { color: #e5e7eb !important; }
+        .admin-sidebar a:hover { color: #fff !important; }
+        .admin-sidebar .nav-link { color: #a1a1aa !important; }
+        .admin-sidebar .btn { color: #fff !important; border-color: #333 !important; }
+        .admin-sidebar .btn:hover { background: #222 !important; }
+        .admin-sidebar .login-area { background: #1a1a1e; border-radius: 12px; padding: 12px; }
+        @@media (max-width: 991.98px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform .25s; }
+            .admin-sidebar.show { transform: translateX(0); }
+            .admin-main { margin-left: 0; }
+            .sidebar-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1039; display: none; }
+            .sidebar-backdrop.show { display: block; }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CLOthings</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-logo">
+            <span style="font-size:20px;">CLOthings</span>
+            <span style="margin-left:8px; font-size:10px; background:#fff; color:#111; padding:2px 6px; border-radius:99px;">ADMIN</span>
+        </div>
+
+        <div class="sidebar-nav">
+            <div class="sidebar-section">總覽</div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <a class="sidebar-link active" asp-controller="Admin" asp-action="Dashboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        管理後台
+                    </a>
+                    <div class="sidebar-section">管理</div>
+                    <a class="sidebar-link" asp-controller="User" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        使用者管理
+                    </a>
+                    <a class="sidebar-link" asp-controller="UserProfile" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        個人資料管理
+                    </a>
+                    <a class="sidebar-link" asp-area="" asp-controller="Product" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        產品管理
+                    </a>
+                    <a class="sidebar-link" asp-area="" asp-controller="GroupOrder" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        團購訂單
+                    </a>
+                    <a class="sidebar-link" asp-area="" asp-controller="CommunityPost" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        社群管理
+                    </a>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <a class="sidebar-link active" asp-controller="Admin" asp-action="ManageProducts">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        管理後台
+                    </a>
+                    <div class="sidebar-section">管理</div>
+                    <a class="sidebar-link" asp-area="" asp-controller="Product" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        產品管理
+                    </a>
+                    <a class="sidebar-link" asp-area="" asp-controller="GroupOrder" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        團購訂單
+                    </a>
+                    <a class="sidebar-link" asp-area="" asp-controller="CommunityPost" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        社群管理
+                    </a>
+                }
+            }
+        </div>
+
+        <div style="padding:16px; border-top:1px solid #222;">
+            <div class="login-area">
+                <partial name="_LoginPartial" />
+            </div>
+            <div style="font-size:11px; color:#52525b; margin-top:12px;">&copy; 2026 CLOthings</div>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <header class="topbar">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button class="btn btn-outline-secondary d-lg-none" id="btnToggleSidebar" style="border-radius:10px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">商城</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">團購</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">社群</a>
-                        </li> *@
-
-                        @if (User.Identity.IsAuthenticated)
-                        {
-
-                            @* 依角色顯示不同功能 *@
-                            @if (User.IsInRole("SuperAdmin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">管理後台</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="User" asp-action="Index">使用者管理</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="UserProfile" asp-action="Index">個人資料管理</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">產品管理</a>
-                                </li>
-                                <!-- 新增：團購訂單管理連結 -->
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="GroupOrder" asp-action="Index">團購訂單</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="CommunityPost" asp-action="Index">社群管理</a>
-                                </li>
-                            }
-                            else if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="ManageProducts">admin</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">產品管理</a>
-                                </li>
-                                <!-- 新增：團購訂單管理連結 -->
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="GroupOrder" asp-action="Index">團購訂單</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="CommunityPost" asp-action="Index">社群管理</a>
-                                </li>
-
-                            }
-                        }
-
-                    </ul>
-                    <partial name="_LoginPartial" />
+                <div>
+                    <div style="font-size:13px; color:#71717a;">Admin / @ViewData["Title"]</div>
+                    <div style="font-weight:600;">@ViewData["Title"]</div>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:13px; color:#71717a;">@User.Identity.Name</span>
+            </div>
+        </header>
+
+        <main class="content-wrap">
             @RenderBody()
         </main>
+
+        <footer class="border-top bg-white" style="padding:14px 24px; font-size:13px; color:#71717a;">
+            &copy; 2026 - CLOthings Admin - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - CLOthings - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var btn = document.getElementById('btnToggleSidebar');
+            var sidebar = document.getElementById('adminSidebar');
+            var backdrop = document.getElementById('sidebarBackdrop');
+            if (!btn) return;
+            function open() { sidebar.classList.add('show'); backdrop.classList.add('show'); }
+            function close() { sidebar.classList.remove('show'); backdrop.classList.remove('show'); }
+            btn.addEventListener('click', function () {
+                if (sidebar.classList.contains('show')) close(); else open();
+            });
+            backdrop.addEventListener('click', close);
+        })();
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
