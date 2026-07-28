@@ -90,6 +90,8 @@ public class ProductController : Controller
     {
         var product = await _context.Products
             .Include(p => p.ProductCategory) // 記得要 Include，不然 Navigation Property 不會自動載入
+            .Include(p => p.ProductImg)      // 圖片
+            .Include(p => p.ProductSpecifications)  // 規格
             .FirstOrDefaultAsync(p => p.ProductId == id);
 
         if (product == null) return NotFound();
@@ -104,7 +106,20 @@ public class ProductController : Controller
             Price = product.Price,
             Status = product.Status,
             SalesStartDate = product.SalesStartDate,
-            SalesEndDate = product.SalesEndDate
+            SalesEndDate = product.SalesEndDate,
+            ExistingImages = product.ProductImg.Select(img => new ExistingProductImgViewModel
+            {
+                ProductImgId = img.ProductImgId,
+                ProductImgFile = img.ProductImgFile
+            }).ToList(),
+            ProductSpecifications = product.ProductSpecifications.Select(spec => new ProductSpecificationViewModel
+            {
+                Size = spec.Size,
+                Color = spec.Color,
+                Inventory = spec.Inventory,
+                UnitOnOrder = spec.UnitOnOrder,
+                ReorderLevel = spec.ReorderLevel
+            }).ToList()
         };
 
         return View(viewModel);
@@ -128,6 +143,8 @@ public class ProductController : Controller
     {
         if (!ModelState.IsValid)
         {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            
             SetStatusOptions();
             SetSupplierOptions();
             SetCategoryOptions();
@@ -164,30 +181,38 @@ public class ProductController : Controller
         // 商品圖片：先實際存檔，再包成 ProductImg 實體加入集合
         if (model.ProductImg != null)
         {
+
             foreach (var file in model.ProductImg)
             {
+
                 if (file.Length > 0)
                 {
-                    var extension = Path.GetExtension(file.FileName);  // 取得副檔名，例如 ".jpg"
-                    var fileName = $"{Guid.NewGuid()}{extension}";       // 產生不會重複的新檔名
+                    var extension = Path.GetExtension(file.FileName);
+                    var fileName = $"{Guid.NewGuid()}{extension}";
                     var saveFolder = Path.Combine("wwwroot", "imgs", "products");
-                    Directory.CreateDirectory(saveFolder); // 資料夾不存在就自動建立
+                    Directory.CreateDirectory(saveFolder);
 
                     var savePath = Path.Combine(saveFolder, fileName);
+
 
                     using (var stream = new FileStream(savePath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);
                     }
 
-                    product.ProductImgs.Add(new ProductImg
+
+
+                    product.ProductImg.Add(new ProductImg   // ← 改成 ProductImg（複數）
                     {
-                        ProductImgFile = fileName // 只存檔名，實際顯示時前面補路徑
+                        ProductImgFile = fileName
                     });
+
+
                 }
             }
         }
 
+       
         _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -205,7 +230,8 @@ public class ProductController : Controller
         }
 
         var product = await _context.Products
-            .Include(p => p.ProductCategory)
+            .Include(p => p.ProductCategory) // 分類集合
+            .Include(p => p.ProductImg)  // 圖片集合
             .FirstOrDefaultAsync(p => p.ProductId == id);
 
         if (product == null)
@@ -227,23 +253,24 @@ public class ProductController : Controller
             Price = product.Price,
             Status = product.Status,
             SalesStartDate = product.SalesStartDate,
-            SalesEndDate = product.SalesEndDate
+            SalesEndDate = product.SalesEndDate,
+            ExistingImages = product.ProductImg.Select(img => new ExistingProductImgViewModel
+            {
+                ProductImgId = img.ProductImgId,
+                ProductImgFile = img.ProductImgFile
+            }).ToList()
         };
 
         return View(viewModel);
     }
 
     // POST: PRODUCTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id,ProductViewModel model)
+    public async Task<IActionResult> Edit(int? id, ProductViewModel model)
     {
         if (id != model.ProductId)
-        {
             return NotFound();
-        }
 
         if (ModelState.IsValid)
         {
@@ -252,8 +279,11 @@ public class ProductController : Controller
             SetCategoryOptions();
             try
             {
-                // 用 id 從資料庫「查出」真正的 Entity
-                var product = await _context.Products.FindAsync(id);
+                // 用 id 從資料庫「查出」真正的 Entity，記得 Include 圖片集合
+                var product = await _context.Products
+                    .Include(p => p.ProductImg)
+                    .FirstOrDefaultAsync(p => p.ProductId == id);
+
                 if (product == null)
                 {
                     return NotFound();
@@ -268,6 +298,54 @@ public class ProductController : Controller
                 product.Status = model.Status;
                 product.SalesStartDate = model.SalesStartDate;
                 product.SalesEndDate = model.SalesEndDate;
+
+                // 處理刪除勾選的圖片
+                if (model.ImagesToDelete != null && model.ImagesToDelete.Any())
+                {
+                    var imgsToRemove = product.ProductImg
+                        .Where(img => model.ImagesToDelete.Contains(img.ProductImgId))
+                        .ToList();
+
+                    foreach (var img in imgsToRemove)
+                    {
+                        // 順便刪除實體檔案
+                        var filePath = Path.Combine("wwwroot", "imgs", "products", img.ProductImgFile);
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
+
+                        product.ProductImg.Remove(img);
+                        _context.ProductImgs.Remove(img);
+                       
+                    }
+                }
+
+                // 處理新上傳的圖片
+                if (model.ProductImg != null)
+                {
+                    foreach (var file in model.ProductImg)
+                    {
+                        if (file.Length > 0)
+                        {
+                            var ext = Path.GetFileName(file.FileName);
+                            var fileName = $"{Guid.NewGuid()}{ext}";
+                            var saveFolder = Path.Combine("wwwroot", "imgs", "products");
+                            Directory.CreateDirectory(saveFolder);
+                            var savePath = Path.Combine(saveFolder, fileName);
+
+                            using (var stream = new FileStream(savePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+
+                            product.ProductImg.Add(new ProductImg
+                            {
+                                ProductImgFile = fileName
+                            });
+                        }
+                    }
+                }
 
                 await _context.SaveChangesAsync();
             }

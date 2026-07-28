@@ -693,7 +693,7 @@ public partial class CLOthingsContext : DbContext
                 .IsRequired()
                 .HasMaxLength(255);
 
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductImgs)
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductImg)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("FK_ProductImg_Product");
         });

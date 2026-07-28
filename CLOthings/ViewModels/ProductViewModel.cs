@@ -43,11 +43,16 @@ namespace CLOthings.ViewModels
 
         [Display(Name = "商品規格")]
         public List<ProductSpecificationViewModel>? ProductSpecifications { get; set; }
+
+
+        public List<ExistingProductImgViewModel>? ExistingImages { get; set; }  // 目前資料庫已有的圖片
+
+        public List<int>? ImagesToDelete { get; set; }  // 使用者勾選要刪除的圖片ID
     }
 
     public class ProductSpecificationViewModel
     {
-        [Required(ErrorMessage = "此欄位必填")]
+        //[Required(ErrorMessage = "此欄位必填")]
         [Display(Name = "尺寸")]
         public string? Size { get; set; }
 
@@ -60,11 +65,17 @@ namespace CLOthings.ViewModels
         public int? Inventory { get; set; }
 
         [Display(Name = "在途庫存")]
-        public int UnitOnOrder { get; set; }
+        public int? UnitOnOrder { get; set; }
 
         [Required(ErrorMessage = "此欄位必填")]
         [Display(Name = "再訂量")]
         public int? ReorderLevel { get; set; }
 
+    }
+
+    public class ExistingProductImgViewModel
+    {
+        public int ProductImgId { get; set; }
+        public string ProductImgFile { get; set; }
     }
 }

@@ -76,20 +76,62 @@
     <dl>
     
     </dl>
-    <dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductImg)
+    <dl class="row">
+        <dt class="col-sm-2">
+            商品圖片
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductImg)
+        <dd class="col-sm-10">
+            @if (Model.ExistingImages != null && Model.ExistingImages.Any())
+            {
+                <div class="d-flex gap-2 flex-wrap">
+                    @foreach (var img in Model.ExistingImages)
+                    {
+                        <img src="~/imgs/products/@img.ProductImgFile"
+                             style="width:100px;height:100px;object-fit:cover;" class="border rounded" />
+                    }
+                </div>
+            }
+            else
+            {
+                <span class="text-muted">尚未上傳圖片</span>
+            }
         </dd>
     </dl>
-    <dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductSpecifications)
+    <dl class="row">
+        <dt class="col-sm-2">
+            商品規格
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductSpecifications)
+        <dd class="col-sm-10">
+            @if (Model.ProductSpecifications != null && Model.ProductSpecifications.Any())
+            {
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>尺寸</th>
+                            <th>顏色</th>
+                            <th>庫存數量</th>
+                            <th>在途庫存</th>
+                            <th>再訂量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var spec in Model.ProductSpecifications)
+                        {
+                            <tr>
+                                <td>@spec.Size</td>
+                                <td>@spec.Color</td>
+                                <td>@spec.Inventory</td>
+                                <td>@spec.UnitOnOrder</td>
+                                <td>@spec.ReorderLevel</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <span class="text-muted">尚未設定規格</span>
+            }
         </dd>
     </dl>
       

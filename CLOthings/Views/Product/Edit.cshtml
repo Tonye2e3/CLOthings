@@ -61,10 +61,39 @@
             </div>
             
             <div class="form-group">
-                <label asp-for="ProductImg" class="control-label"></label>
-                <input asp-for="ProductImg" class="form-control" />
+                <label class="control-label">商品圖片</label>
+
+                @if (Model.ExistingImages != null && Model.ExistingImages.Any())
+                {
+                    <p class="text-muted">目前共 @Model.ExistingImages.Count 張圖片</p>
+                    <div class="d-flex gap-3 flex-wrap mb-3">
+                        @for (int i = 0; i < Model.ExistingImages.Count; i++)
+                        {
+                            <div class="text-center border rounded p-2" style="width:120px;">
+                                <img src="~/imgs/products/@Model.ExistingImages[i].ProductImgFile"
+                                     style="width:100px;height:100px;object-fit:cover;" />
+                                <div class="form-check mt-1">
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           name="ImagesToDelete"
+                                           value="@Model.ExistingImages[i].ProductImgId"
+                                           id="delImg_@i" />
+                                    <label class="form-check-label small" for="delImg_@i">刪除</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">目前尚未上傳任何圖片</p>
+                }
+
+                <label class="control-label">新增圖片</label>
+                <input type="file" name="ProductImg" multiple class="form-control" />
                 <span asp-validation-for="ProductImg" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="ProductSpecifications" class="control-label"></label>
                 <input asp-for="ProductSpecifications" class="form-control" />
