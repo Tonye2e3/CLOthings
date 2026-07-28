@@ -23,7 +23,7 @@ public partial class UserProfile
     [Display(Name = "頭像")]
     public string Avatar { get; set; }
     [NotMapped]
-    public IFormFile? AvatarFile { get; set; }
+    public IFormFile AvatarFile { get; set; }
 
     [Display(Name = "性別")]
     public string Gender { get; set; }
