@@ -4,7 +4,6 @@
     ViewData["Title"] = "新增官方貼文";
 }
 
-<!-- 套用 ElaAdmin 標準動畫與格線容器 -->
 <div class="animated fadeIn mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -42,7 +41,7 @@
                         <!-- 2. 貼文內容 (改成多行文字框 textarea 體驗更好) -->
                         <div class="mb-4">
                             <label asp-for="Content" class="form-label fw-bold">內容</label>
-                            <textarea asp-for="Content" class="form-control" rows="4" placeholder="請輸入官方公告或貼文內文..."></textarea>
+                            <textarea asp-for="Content" class="form-control" rows="4" placeholder="請輸入官方公告或貼文內文..." required></textarea>
                             <span asp-validation-for="Content" class="text-danger"></span>
                         </div>
 
