@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 
-[Route("/User/{action=index}/{userid?}")] //Attribute Routing 更換路由設定
+//[Route("/User/{action=index}/{userid?}")] //Attribute Routing 更換路由設定
 public class UserController : Controller
 {
     private readonly CLOthingsContext _context;
@@ -49,8 +49,8 @@ public class UserController : Controller
     {
         var vm = new UserCreateViewModel
         {
-            UserType = (UserTypeEnum)3, // 一般使用者
-            Status = (StatusEnum)1      // 啟用
+            UserType = UserTypeEnum.User, // 一般使用者
+            Status = StatusEnum.Active      // 啟用
         };
         return View(vm);
     }
@@ -71,6 +71,11 @@ public class UserController : Controller
             ModelState.AddModelError("Account", "此帳號已被註冊");
             return View(vm);
         }
+        if (_context.Users.Any(u => u.Username == vm.Username))
+        {
+            ModelState.AddModelError("Username", "此使用者名稱已被使用");
+            return View(vm);
+        }
 
         // 將 ViewModel 轉換成 User 實體
         var user = new User
@@ -82,8 +87,8 @@ public class UserController : Controller
             Phone = vm.Phone,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,
-            UserType = UserTypeEnum.User,
-            Status = StatusEnum.Active
+            UserType = vm.UserType,
+            Status = vm.Status
         };
 
         _context.Users.Add(user);
@@ -105,7 +110,21 @@ public class UserController : Controller
         {
             return NotFound();
         }
-        return View(user);
+        var vm = new UserCreateViewModel
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+            Account = user.Account,
+            Password = user.Password,
+            Email = user.Email,
+            Phone = user.Phone,
+            CreatedAt = DateTime.Now,
+            UpdatedAt = DateTime.Now,
+            UserType = user.UserType,
+            Status = user.Status,
+            TwoFactorEnabled = user.TwoFactorEnabled
+        };
+        return View(vm);
     }
 
     // POST: USERS/Edit/5
@@ -113,56 +132,54 @@ public class UserController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? userid, [Bind("UserId,Username,Account,Password,Email,Phone,UpdatedAt,UserType,Status,TwoFactorEnabled,TwoFactorSecret,CountryCode,Carts,CommunityPosts,CustomerFavorites,GroupCarts,GroupCustomerFavorites,GroupOrders,GroupPaymentMethods,Orders,PaymentMethods,PostComments,PostLikes,Reviews,UserAddresses,UserFollowFollowers,UserFollowFollowings,UserOauths,UserProfiles")] User user)
+    public async Task<IActionResult> Edit(UserCreateViewModel vm)
     {
 
-        if (userid != user.UserId)
-        {
-            return NotFound();
+        if (!ModelState.IsValid)
+        {    // 驗證失敗 → 回傳原本的 View
+            return View(vm);
         }
 
-        if (ModelState.IsValid)
+
+        try
         {
-            try
+            var existingUser = await _context.Users.FindAsync(vm.UserId);
+            if (existingUser == null)
             {
-                var existingUser = await _context.Users.FindAsync(userid);
-                if (existingUser == null)
-                {
-                    return NotFound();
-                }
-
-                // 更新必要欄位
-                existingUser.Username = user.Username;
-                existingUser.Account = user.Account;
-                existingUser.Password = user.Password;
-                existingUser.Email = user.Email;
-                existingUser.Phone = user.Phone;
-                existingUser.UserType = user.UserType;
-                existingUser.Status = user.Status;
-                existingUser.TwoFactorEnabled = user.TwoFactorEnabled ?? false;
-                existingUser.CountryCode = user.CountryCode;
-
-                // ✅ 自動更新時間
-                existingUser.UpdatedAt = DateTime.Now;
-
-                // ❌ 不要動 CreatedAt
-                await _context.SaveChangesAsync();
+                return NotFound(vm);
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(user.UserId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
 
+            // 更新必要欄位
+            existingUser.Username = vm.Username;
+            existingUser.Account = vm.Account;
+            existingUser.Password = vm.Password;
+            existingUser.Email = vm.Email;
+            existingUser.Phone = vm.Phone;
+            existingUser.UserType = vm.UserType;
+            existingUser.Status = vm.Status;
+            existingUser.TwoFactorEnabled = vm.TwoFactorEnabled;
+
+            // ✅ 自動更新時間
+            existingUser.UpdatedAt = DateTime.Now;
+
+            // ❌ 不要動 CreatedAt
+            await _context.SaveChangesAsync();
         }
-        return View(user);
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!UserExists(vm.UserId))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+        return RedirectToAction(nameof(Index));
+
+
+        return View(vm);
     }
 
     // GET: USERS/Delete/5
@@ -226,16 +243,16 @@ public class UserController : Controller
             .FirstOrDefaultAsync(u => u.Account == vm.Account);
         Console.WriteLine($"查詢完成，用時：{sw.ElapsedMilliseconds} ms");
 
-        if (user == null)
+        if (user == null || user.Password != vm.Password)
         {
             ModelState.AddModelError("", "帳號或密碼錯誤");
-            return View();
+            return View(vm);
         }
 
         if (user.UserType == UserTypeEnum.Banned)
         {
             ModelState.AddModelError("", "您的帳號已被封禁");
-            return View();
+            return View(vm);
         }
 
         // 建立 Claims
@@ -304,6 +321,11 @@ public class UserController : Controller
         if (_context.Users.Any(u => u.Account == vm.Account))
         {
             ModelState.AddModelError("Account", "此帳號已被註冊");
+            return View(vm);
+        }
+        if (_context.Users.Any(u => u.Username == vm.Username))
+        {
+            ModelState.AddModelError("Username", "此使用者名稱已被使用");
             return View(vm);
         }
 

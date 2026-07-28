@@ -19,13 +19,9 @@
             @* 只有 SuperAdmin 才需要看到下拉，方便他幫別人建 *@
             @if (User.IsInRole("SuperAdmin"))
             {
-                <div class="form-group">
-                    <label asp-for="UserId" class="control-label"></label>
-                    <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
-                        <option value="">請選擇使用者</option>
-                    </select>
-                    <span asp-validation-for="UserId" class="text-danger"></span>
-                </div>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId">
+                    <option value="">請選擇使用者</option>
+                </select>
             }
             else
             {

@@ -46,30 +46,32 @@ public class UserProfileController : Controller
         return View(userprofile);
     }
 
+
+
     // GET: USERPROFILES/Create
-    [Authorize]
-    public async Task<IActionResult> Create() // 1. 一定要是 async Task
+    [Authorize(Roles = "SuperAdmin")]
+    public async Task<IActionResult> Create()
     {
-        var account = User.Identity?.Name;
-        if (string.IsNullOrEmpty(account)) return RedirectToAction("Login", "User");
+        // 找出所有已經有 UserProfile 的使用者 ID
+        var existingProfileUserIds = await _context.UserProfiles
+            .Select(p => p.UserId)
+            .ToListAsync();
 
-        // 2. 有 Async 就要有 await
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Account == account);
-        if (user == null) return NotFound();
+        // 篩選出尚未建立個人資料的使用者
+        var availableUsers = await _context.Users
+            .Where(u => !existingProfileUserIds.Contains(u.UserId))
+            .ToListAsync();
 
-        // 3. AnyAsync 也要 await
-        if (await _context.UserProfiles.AnyAsync(p => p.UserId == user.UserId))
+        // 管理員可以選擇任何使用者
+        if (!availableUsers.Any())
         {
-            return RedirectToAction("Profile");
+            TempData["Message"] = "所有使用者都已建立個人資料。";
+            return RedirectToAction(nameof(Index));
         }
 
-        ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Account", user.UserId);
+        ViewData["UserId"] = new SelectList(availableUsers, "UserId", "Account");
 
-        var vm = new UserProfileCreateViewModel
-        {
-            UserId = user.UserId
-        };
-        return View(vm);
+        return View();
     }
 
 
@@ -83,46 +85,62 @@ public class UserProfileController : Controller
     {
         if (ModelState.IsValid)
         {
-            string? fileName = null;
+            var existingProfileUserIds = await _context.UserProfiles.Select(p => p.UserId).ToListAsync();
 
-            // 有上傳檔案才處理
-            if (vm.AvatarFile != null && vm.AvatarFile.Length > 0)
+            var availableUsers = await _context.Users.Where(u => !existingProfileUserIds.Contains(u.UserId)).ToListAsync();
+            ViewData["UserId"] = new SelectList(availableUsers, "UserId", "Account");
+
+            return View(vm);
+        }
+        string? fileName = null;
+
+        // 有上傳檔案才處理
+        if (vm.AvatarFile != null && vm.AvatarFile.Length > 0)
+        {
+            // 1. 確保資料夾存在
+            var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "avatars");
+            Directory.CreateDirectory(uploadFolder);
+
+            // 2. 用 GUID 重新命名，避免檔名重複
+            fileName = Guid.NewGuid().ToString() + Path.GetExtension(vm.AvatarFile.FileName);
+            var filePath = Path.Combine(uploadFolder, fileName);
+
+            // 3. 存檔
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                // 1. 確保資料夾存在
-                var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "avatars");
-                Directory.CreateDirectory(uploadFolder);
-
-                // 2. 用 GUID 重新命名，避免檔名重複
-                fileName = Guid.NewGuid().ToString() + Path.GetExtension(vm.AvatarFile.FileName);
-                var filePath = Path.Combine(uploadFolder, fileName);
-
-                // 3. 存檔
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await vm.AvatarFile.CopyToAsync(stream);
-                }
-
+                await vm.AvatarFile.CopyToAsync(stream);
             }
 
-            var entity = new UserProfile
-            {
-                UserId = vm.UserId,
-                FirstName = vm.FirstName, // 你的名字
-                LastName = vm.LastName, // 你的姓氏
-                Gender = vm.Gender.ToString(),
-                Birthday = vm.Birthday,
-                Avatar = fileName != null ? $"/uploads/avatars/{fileName}" : null // 只存路徑
-            };
-
-            _context.Add(entity);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Profile));
         }
-        ViewData["UserId"] = new SelectList(_context.Users, "UserId", "Account", vm.UserId);
-        return View(vm);
+
+        // 🔹 取得目前登入者的帳號
+        var account = User.Identity?.Name;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Account == account);
+        if (user == null) return NotFound();
+
+        var entity = new UserProfile
+        {
+            UserId = User.IsInRole("SuperAdmin") ? vm.UserId : user.UserId,
+            FirstName = vm.FirstName, // 你的名字
+            LastName = vm.LastName, // 你的姓氏
+            Gender = vm.Gender.ToString(),
+            Birthday = vm.Birthday,
+            Avatar = fileName != null ? $"/uploads/avatars/{fileName}" : null // 只存路徑
+        };
+
+        _context.Add(entity);
+        await _context.SaveChangesAsync();
+
+        // 🔹 SuperAdmin 回到列表，一般使用者回到個人資料
+        return User.IsInRole("SuperAdmin")
+    ? RedirectToAction(nameof(Index))
+    : RedirectToAction(nameof(Profile));
     }
 
+
+
     // GET: USERPROFILES/Edit/5
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> Edit(int? userprofileid)
     {
         if (userprofileid == null)
@@ -233,15 +251,26 @@ public class UserProfileController : Controller
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Account == account);
         if (user == null) return NotFound($"找不到帳號 {account}");
 
-
         var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == user.UserId);
 
-        // ✅ 如果使用者還沒有建立個人資料，導向建立頁面
         if (profile == null)
         {
-            return RedirectToAction("Create");
-        }
-        return View("Details", profile);
+            // 一般使用者 → 自動建立一筆空白資料
+            profile = new UserProfile
+            {
+                UserId = user.UserId,
+                FirstName = "",
+                LastName = "",
+                Gender = "",
+                Birthday = null,
+                Avatar = null
+            };
 
+            _context.UserProfiles.Add(profile);
+            await _context.SaveChangesAsync();
+        }
+
+        return View("Edit", profile);
     }
+
 }

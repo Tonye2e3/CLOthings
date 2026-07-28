@@ -23,4 +23,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\scss\bootstrap\scss\forms\" />
+    <Folder Include="wwwroot\scss\bootstrap\scss\helpers\" />
+    <Folder Include="wwwroot\scss\bootstrap\scss\mixins\" />
+    <Folder Include="wwwroot\scss\bootstrap\scss\utilities\" />
+    <Folder Include="wwwroot\scss\bootstrap\scss\vendor\" />
+  </ItemGroup>
+
 </Project>
