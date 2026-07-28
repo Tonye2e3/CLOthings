@@ -72,7 +72,8 @@
 
             <div class="form-group">
                 <label asp-for="ProductImg" class="control-label"></label>
-                <input type="file" name="ProductImg" multiple class="form-control" />
+                <input type="file" id="fileInput" name="ProductImg" multiple accept="image/*" class="form-control" />
+                <div id="previewContainer" class="d-flex gap-2 flex-wrap mt-2"></div>
                 <span asp-validation-for="ProductImg" class="text-danger"></span>
             </div>
 
@@ -117,3 +118,58 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+    // 存放目前使用者實際選定要上傳的檔案（DataTransfer 用來動態增減 FileList）
+    let dt = new DataTransfer();
+
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('previewContainer');
+
+    fileInput.addEventListener('change', function () {
+        // 把這次新選的檔案，加進原本已經選好的清單裡
+        for (const file of fileInput.files) {
+            dt.items.add(file);
+        }
+        fileInput.files = dt.files; // 更新 input 實際的檔案清單（含之前選過的）
+        renderPreview();
+    });
+
+    function renderPreview() {
+        previewContainer.innerHTML = '';
+
+        Array.from(dt.files).forEach((file, index) => {
+            const url = URL.createObjectURL(file);
+
+            const card = document.createElement('div');
+            card.className = 'text-center border rounded p-2';
+            card.style.width = '120px';
+            card.innerHTML = `
+                <img src="${url}" style="width:100px;height:100px;object-fit:cover;" />
+                <div class="small mt-1 text-truncate">${file.name}</div>
+                <button type="button" class="btn btn-outline-danger btn-sm mt-1 removeBtn" data-index="${index}">刪除</button>
+            `;
+            previewContainer.appendChild(card);
+        });
+
+        // 綁定每個刪除按鈕的事件
+        document.querySelectorAll('.removeBtn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const index = parseInt(this.dataset.index);
+                removeFile(index);
+            });
+        });
+    }
+
+    function removeFile(index) {
+        const newDt = new DataTransfer();
+        Array.from(dt.files).forEach((file, i) => {
+            if (i !== index) {
+                newDt.items.add(file);
+            }
+        });
+        dt = newDt;
+        fileInput.files = dt.files;
+        renderPreview();
+    }
+</script>
