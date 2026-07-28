@@ -4,7 +4,6 @@
     ViewData["Title"] = "新增官方貼文";
 }
 
-<!-- 套用 ElaAdmin 標準動畫與格線容器 -->
 <div class="animated fadeIn mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -36,13 +35,13 @@
                             <!-- 實際回傳給 Controller 的 UserId 隱藏欄位 -->
                             <input type="hidden" asp-for="UserId" value="@(ViewBag.AdminUserId ?? 17)" />
 
-                            <div class="form-text text-muted mt-1">後台新增之貼文將統一以官方管理員身份發布。</div>
+                            <div class="form-text text-muted mt-1 ">後台新增之貼文將統一以官方管理員身份發布。</div>
                         </div>
 
                         <!-- 2. 貼文內容 (改成多行文字框 textarea 體驗更好) -->
                         <div class="mb-4">
                             <label asp-for="Content" class="form-label fw-bold">內容</label>
-                            <textarea asp-for="Content" class="form-control" rows="4" placeholder="請輸入官方公告或貼文內文..."></textarea>
+                            <textarea asp-for="Content" class="form-control" rows="4" placeholder="請輸入官方公告或貼文內文..." required></textarea>
                             <span asp-validation-for="Content" class="text-danger"></span>
                         </div>
 
