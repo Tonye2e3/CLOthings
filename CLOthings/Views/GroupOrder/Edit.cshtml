@@ -1,29 +1,23 @@
 @model CLOthings.Models.GroupOrder
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "編輯團購訂單";
 }
 
-<h1>Edit</h1>
-<h4>GroupOrder</h4>
+<h1>編輯訂單</h1>
+<h4>團購訂單資訊</h4>
 <hr />
 
 <div class="row">
     <div class="col-md-6">
-        <!-- 修正重點：asp-route-id -->
         <form asp-action="Edit" asp-route-id="@Model.GroupOrderId">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <input type="hidden" asp-for="GroupOrderId" />
+            <input type="hidden" asp-for="UserId" />
 
             <div class="form-group mb-3">
-                <label asp-for="UserId" class="control-label"></label>
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label"></label>
+                <label asp-for="Status" class="control-label">訂單狀態</label>
                 <select asp-for="Status" class="form-select">
                     <option value="處理中">處理中</option>
                     <option value="已付款">已付款</option>
@@ -35,33 +29,33 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="TotalPrice" class="control-label"></label>
+                <label asp-for="TotalPrice" class="control-label">總金額</label>
                 <input asp-for="TotalPrice" class="form-control" type="number" step="0.01" />
                 <span asp-validation-for="TotalPrice" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="OrderDate" class="control-label"></label>
+                <label asp-for="OrderDate" class="control-label">訂單日期</label>
                 <input asp-for="OrderDate" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                 <span asp-validation-for="OrderDate" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="ShipperDate" class="control-label"></label>
+                <label asp-for="ShipperDate" class="control-label">預計/實際出貨日期</label>
                 <input asp-for="ShipperDate" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
                 <span asp-validation-for="ShipperDate" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="GroupShipperId" class="control-label"></label>
+                <label asp-for="GroupShipperId" class="control-label">物流商編號</label>
                 <input asp-for="GroupShipperId" class="form-control" />
                 <span asp-validation-for="GroupShipperId" class="text-danger"></span>
             </div>
 
+            <!-- 已移除面交選項 -->
             <div class="form-group mb-3">
-                <label asp-for="PickupMethod" class="control-label"></label>
+                <label asp-for="PickupMethod" class="control-label">取貨方式</label>
                 <select asp-for="PickupMethod" class="form-select">
-                    <option value="面交">面交</option>
                     <option value="宅配">宅配</option>
                     <option value="超商取貨">超商取貨</option>
                 </select>
@@ -69,38 +63,40 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="ShipName" class="control-label"></label>
+                <label asp-for="ShipName" class="control-label">收件人姓名</label>
                 <input asp-for="ShipName" class="form-control" />
                 <span asp-validation-for="ShipName" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="ShipAddress" class="control-label"></label>
+                <label asp-for="ShipAddress" class="control-label">收件地址</label>
                 <input asp-for="ShipAddress" class="form-control" />
                 <span asp-validation-for="ShipAddress" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="ShipPhone" class="control-label"></label>
+                <label asp-for="ShipPhone" class="control-label">收件人電話</label>
                 <input asp-for="ShipPhone" class="form-control" />
                 <span asp-validation-for="ShipPhone" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Freight" class="control-label"></label>
+                <label asp-for="Freight" class="control-label">運費</label>
                 <input asp-for="Freight" class="form-control" type="number" step="0.01" />
                 <span asp-validation-for="Freight" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="PaymentMethodId" class="control-label"></label>
-                <input asp-for="PaymentMethodId" class="form-control" />
+                <label asp-for="PaymentMethodId" class="control-label">付款方式編號</label>
+                <select asp-for="PaymentMethodId" class="form-select" asp-items="ViewBag.PaymentMethodId">
+                    <option value="">-- 請選擇付款方式 --</option>
+                </select>
                 <span asp-validation-for="PaymentMethodId" class="text-danger"></span>
             </div>
 
             <div class="form-group mt-4 mb-5">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+                <input type="submit" value="儲存變更" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">返回列表</a>
             </div>
         </form>
     </div>
