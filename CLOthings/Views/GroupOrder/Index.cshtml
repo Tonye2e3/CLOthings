@@ -5,7 +5,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center my-3">
-    <h1>團購訂單列表 (Group Orders)</h1>
+    <h1>團購訂單管理</h1>
     <a asp-action="Create" class="btn btn-primary">➕ 新增訂單</a>
 </div>
 
@@ -13,21 +13,22 @@
     <table class="table table-striped table-hover align-middle mb-0">
         <thead class="table-dark">
             <tr>
-                <th>@Html.DisplayNameFor(model => model.GroupOrderId)</th>
-                <th>@Html.DisplayNameFor(model => model.UserId)</th>
-                <th>@Html.DisplayNameFor(model => model.Status)</th>
-                <th>@Html.DisplayNameFor(model => model.TotalPrice)</th>
-                <th>@Html.DisplayNameFor(model => model.OrderDate)</th>
-                <th>@Html.DisplayNameFor(model => model.PickupMethod)</th>
-                <th>@Html.DisplayNameFor(model => model.ShipName)</th>
-                <th class="text-center" style="width: 180px;">操作</th>
+                <th>訂單編號</th>
+                <th>會員編號</th>
+                <th>訂購產品</th>
+                <th>訂單狀態</th>
+                <th>總金額</th>
+                <th>訂單日期</th>
+                <th>取貨方式</th>
+                <th>收件人姓名</th>
+                <th class="text-center" style="width: 180px;">操作區塊</th>
             </tr>
         </thead>
         <tbody>
             @if (!Model.Any())
             {
                 <tr>
-                    <td colspan="8" class="text-center text-muted py-4">
+                    <td colspan="9" class="text-center text-muted py-4">
                         目前尚無訂單資料。
                     </td>
                 </tr>
@@ -37,8 +38,30 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>#@Html.DisplayFor(modelItem => item.GroupOrderId)</td>
+                        <td class="fw-bold">#@Html.DisplayFor(modelItem => item.GroupOrderId)</td>
                         <td>@Html.DisplayFor(modelItem => item.UserId)</td>
+                        <td>
+                            @if (item.GroupOrderDetails != null && item.GroupOrderDetails.Any())
+                            {
+                                foreach (var detail in item.GroupOrderDetails)
+                                {
+                                    <div>
+                                        @if (detail.GroupProduct != null)
+                                        {
+                                            <span>@detail.GroupProduct.ProductName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">規格編號: @detail.GroupProductSpecificationId</span>
+                                        }
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">無產品資料</span>
+                            }
+                        </td>
                         <td>
                             @switch (item.Status)
                             {
@@ -48,12 +71,16 @@
                                 case "處理中":
                                     <span class="badge bg-warning text-dark">處理中</span>
                                     break;
-                                case "已出貨":
+                                case "已付款":
+                                    <span class="badge bg-info text-dark">已付款</span>
+                                    break;
                                 case "出貨中":
-                                    <span class="badge bg-info text-dark">@item.Status</span>
+                                case "已出貨":
+                                    <span class="badge bg-primary">@item.Status</span>
                                     break;
                                 case "已取消":
-                                    <span class="badge bg-danger">已取消</span>
+                                case "流團取消":
+                                    <span class="badge bg-danger">@item.Status</span>
                                     break;
                                 default:
                                     <span class="badge bg-secondary">@item.Status</span>
@@ -69,10 +96,9 @@
                         <td>@Html.DisplayFor(modelItem => item.PickupMethod)</td>
                         <td>@Html.DisplayFor(modelItem => item.ShipName)</td>
                         <td class="text-center">
-                            <!-- 修正重點：asp-route-id -->
                             <div class="btn-group btn-group-sm" role="group">
                                 <a asp-action="Edit" asp-route-id="@item.GroupOrderId" class="btn btn-outline-warning">編輯</a>
-                                <a asp-action="Details" asp-route-id="@item.GroupOrderId" class="btn btn-outline-info">明細</a>
+                                <a asp-action="Details" asp-route-id="@item.GroupOrderId" class="btn btn-outline-info">詳情</a>
                                 <a asp-action="Delete" asp-route-id="@item.GroupOrderId" class="btn btn-outline-danger">刪除</a>
                             </div>
                         </td>
