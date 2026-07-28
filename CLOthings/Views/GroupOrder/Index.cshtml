@@ -40,8 +40,6 @@
                     <tr>
                         <td class="fw-bold">#@Html.DisplayFor(modelItem => item.GroupOrderId)</td>
                         <td>@Html.DisplayFor(modelItem => item.UserId)</td>
-
-                        <!-- 訂購產品欄位（已移除後方的數量字串） -->
                         <td>
                             @if (item.GroupOrderDetails != null && item.GroupOrderDetails.Any())
                             {
@@ -54,7 +52,7 @@
                                         }
                                         else
                                         {
-                                            <span class="text-muted">產品編號: @detail.GroupProductId</span>
+                                            <span class="text-muted">規格編號: @detail.GroupProductSpecificationId</span>
                                         }
                                     </div>
                                 }
@@ -64,8 +62,6 @@
                                 <span class="text-muted">無產品資料</span>
                             }
                         </td>
-
-                        <!-- 訂單狀態標籤 -->
                         <td>
                             @switch (item.Status)
                             {
@@ -91,7 +87,6 @@
                                     break;
                             }
                         </td>
-
                         <td class="fw-bold text-primary">
                             $@item.TotalPrice.ToString("N0")
                         </td>

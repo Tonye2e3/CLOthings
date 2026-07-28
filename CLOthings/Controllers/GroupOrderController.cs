@@ -21,6 +21,8 @@ namespace CLOthings.Controllers
             var orders = await _context.GroupOrders
                 .Include(o => o.GroupOrderDetails)
                     .ThenInclude(d => d.GroupProduct)
+                .Include(o => o.GroupOrderDetails)
+                    .ThenInclude(d => d.GroupProductSpecification)
                 .ToListAsync();
 
             return View(orders);
@@ -37,6 +39,8 @@ namespace CLOthings.Controllers
             var grouporder = await _context.GroupOrders
                 .Include(o => o.GroupOrderDetails)
                     .ThenInclude(d => d.GroupProduct)
+                .Include(o => o.GroupOrderDetails)
+                    .ThenInclude(d => d.GroupProductSpecification)
                 .Include(o => o.PaymentMethod)
                 .Include(o => o.GroupShipper)
                 .Include(o => o.User)
@@ -64,7 +68,6 @@ namespace CLOthings.Controllers
                 }
             }
 
-            // 載入付款方式與商品選單
             await PopulateDropDownLists();
 
             var model = new GroupOrder
@@ -82,29 +85,39 @@ namespace CLOthings.Controllers
         // POST: GroupOrder/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("GroupOrderId,UserId,Status,TotalPrice,OrderDate,ShipperDate,GroupShipperId,PickupMethod,ShipName,ShipAddress,ShipPhone,Freight,PaymentMethodId")] GroupOrder grouporder, int productId, int quantity)
+        public async Task<IActionResult> Create([Bind("GroupOrderId,UserId,Status,TotalPrice,OrderDate,ShipperDate,GroupShipperId,PickupMethod,ShipName,ShipAddress,ShipPhone,Freight,PaymentMethodId")] GroupOrder grouporder, int specId, int quantity)
         {
             if (grouporder.ShipperDate.HasValue && grouporder.ShipperDate < grouporder.OrderDate)
             {
                 ModelState.AddModelError("ShipperDate", "預計/實際出貨日期不能早於訂單日期！");
             }
 
-            if (productId <= 0)
+            if (specId <= 0)
             {
-                ModelState.AddModelError("", "請選擇商品！");
+                ModelState.AddModelError("", "請選擇商品規格！");
             }
 
             if (ModelState.IsValid)
             {
-                // 1. 儲存主訂單
+                // 1. 取得規格資料與對應的商品 ID
+                var spec = await _context.GroupProductSpecifications.FindAsync(specId);
+                if (spec == null)
+                {
+                    ModelState.AddModelError("", "找不到所選的商品規格！");
+                    await PopulateDropDownLists(grouporder.PaymentMethodId, specId);
+                    return View(grouporder);
+                }
+
+                // 2. 新增主訂單
                 _context.Add(grouporder);
                 await _context.SaveChangesAsync();
 
-                // 2. 儲存訂單商品明細
+                // 3. 補齊所有外鍵，新增明細
                 var orderDetail = new GroupOrderDetail
                 {
                     GroupOrderId = grouporder.GroupOrderId,
-                    GroupProductId = productId,
+                    GroupProductSpecificationId = spec.GroupProductSpecificationId, // 設定 FK_GroupOrderDetail_Spec
+                    GroupProductId = spec.GroupProductId,                           // 設定 FK_GroupOrderDetail_Product
                     Quantity = quantity > 0 ? quantity : 1
                 };
 
@@ -114,7 +127,7 @@ namespace CLOthings.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            await PopulateDropDownLists(grouporder.PaymentMethodId, productId);
+            await PopulateDropDownLists(grouporder.PaymentMethodId, specId);
             return View(grouporder);
         }
 
@@ -215,8 +228,7 @@ namespace CLOthings.Controllers
             return _context.GroupOrders.Any(e => e.GroupOrderId == id);
         }
 
-        // 載入付款方式與商品選單
-        private async Task PopulateDropDownLists(object? selectedPaymentMethod = null, object? selectedProduct = null)
+        private async Task PopulateDropDownLists(object? selectedPaymentMethod = null, object? selectedSpec = null)
         {
             var paymentMethods = await _context.GroupPaymentMethods.ToListAsync();
             ViewData["PaymentMethodId"] = new SelectList(
@@ -226,12 +238,23 @@ namespace CLOthings.Controllers
                 selectedPaymentMethod
             );
 
-            var products = await _context.GroupProducts.ToListAsync();
-            ViewData["GroupProductId"] = new SelectList(
-                products,
-                "GroupProductId",
-                "ProductName", // 若商品名稱欄位不是 ProductName，請對應修改為你的商品名稱欄位
-                selectedProduct
+            var specs = await _context.GroupProductSpecifications
+                .Include(s => s.GroupProduct)
+                .ToListAsync();
+
+            var specList = specs.Select(s => new
+            {
+                GroupProductSpecificationId = s.GroupProductSpecificationId,
+                SpecName = s.GroupProduct != null
+                    ? $"{s.GroupProduct.ProductName} (規格#{s.GroupProductSpecificationId})"
+                    : $"規格編號 #{s.GroupProductSpecificationId}"
+            }).ToList();
+
+            ViewData["GroupProductSpecificationId"] = new SelectList(
+                specList,
+                "GroupProductSpecificationId",
+                "SpecName",
+                selectedSpec
             );
         }
     }
