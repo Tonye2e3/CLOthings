@@ -83,7 +83,7 @@ public class UserProfileController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(UserProfileCreateViewModel vm)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
             var existingProfileUserIds = await _context.UserProfiles.Select(p => p.UserId).ToListAsync();
 
@@ -161,46 +161,56 @@ public class UserProfileController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int userprofileid, UserProfile model)
+    public async Task<IActionResult> Edit(int userprofileid, UserProfileCreateViewModel model)
     {
         var profileInDb = await _context.UserProfiles.FindAsync(userprofileid);
         if (profileInDb == null) return NotFound();
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            // 有上傳新圖才換
-            if (model.AvatarFile != null && model.AvatarFile.Length > 0)
+            return View(model);
+        }
+
+
+        // 有上傳新圖才換
+        if (model.AvatarFile != null && model.AvatarFile.Length > 0)
+        {
+            var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "avatars");
+            Directory.CreateDirectory(uploadFolder);
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.AvatarFile.FileName);
+            var filePath = Path.Combine(uploadFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                var uploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "avatars");
-                Directory.CreateDirectory(uploadFolder);
-
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.AvatarFile.FileName);
-                var filePath = Path.Combine(uploadFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.AvatarFile.CopyToAsync(stream);
-                }
-
-                // 刪舊圖
-                if (!string.IsNullOrEmpty(profileInDb.Avatar))
-                {
-                    var oldPath = Path.Combine(_webHostEnvironment.WebRootPath, profileInDb.Avatar.TrimStart('/'));
-                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
-                }
-
-                profileInDb.Avatar = $"/uploads/avatars/{fileName}";
+                await model.AvatarFile.CopyToAsync(stream);
             }
 
-            profileInDb.FirstName = model.FirstName;
-            profileInDb.LastName = model.LastName;
-            profileInDb.Gender = model.Gender;
-            profileInDb.Birthday = model.Birthday;
+            // 刪舊圖
+            if (!string.IsNullOrEmpty(profileInDb.Avatar))
+            {
+                var oldPath = Path.Combine(_webHostEnvironment.WebRootPath, profileInDb.Avatar.TrimStart('/'));
+                if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+            }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Profile));
+            profileInDb.Avatar = $"/uploads/avatars/{fileName}";
         }
-        return View(model);
+
+        profileInDb.FirstName = model.FirstName;
+        profileInDb.LastName = model.LastName;
+        profileInDb.Gender = model.Gender.ToString();
+        profileInDb.Birthday = model.Birthday;
+
+        await _context.SaveChangesAsync();
+
+        if (User.IsInRole("SuperAdmin"))
+        {
+            return RedirectToAction(nameof(Index));
+        }
+        else
+        {
+            return RedirectToAction(nameof(Details), new { userprofileid = profileInDb.UserProfileId });
+        }
     }
 
     // GET: USERPROFILES/Delete/5

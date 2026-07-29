@@ -54,9 +54,10 @@ public class UserController : Controller
         };
         return View(vm);
     }
-
+    //POST: USER/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> Create(UserCreateViewModel vm)
     {
         if (!ModelState.IsValid)
@@ -93,6 +94,20 @@ public class UserController : Controller
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
+
+        var profile = new UserProfile
+        {
+            UserId = user.UserId,
+            FirstName = "",
+            LastName = "",
+            Gender = "",
+            Birthday = null,
+            Avatar = null
+        };
+
+        _context.UserProfiles.Add(profile);
+        await _context.SaveChangesAsync();
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -132,6 +147,8 @@ public class UserController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "SuperAdmin")]
+
     public async Task<IActionResult> Edit(UserCreateViewModel vm)
     {
 
