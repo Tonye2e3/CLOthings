@@ -82,26 +82,35 @@
 
                 @for (int i = 0; i < 3; i++)
                 {
+                    var spec = (Model?.ProductSpecifications != null && i < Model.ProductSpecifications.Count)
+        ? Model.ProductSpecifications[i]
+        : null;
+
                     <div class="d-flex gap-2 border rounded p-2 mb-2 flex-wrap">
                         <div style="flex: 1; min-width: 80px;">
                             <label class="small">尺寸</label>
-                            <input name="ProductSpecifications[@i].Size" class="form-control form-control-sm" />
+                            <input name="ProductSpecifications[@i].Size" value="@spec?.Size"
+                                   class="form-control form-control-sm" />
                         </div>
                         <div style="flex: 1; min-width: 80px;">
                             <label class="small">顏色</label>
-                            <input name="ProductSpecifications[@i].Color" class="form-control form-control-sm" />
+                            <input name="ProductSpecifications[@i].Color" value="@spec?.Color"
+                                   class="form-control form-control-sm" />
                         </div>
                         <div style="flex: 1; min-width: 80px;">
                             <label class="small">庫存數量</label>
-                            <input name="ProductSpecifications[@i].Inventory" type="number" class="form-control form-control-sm" />
+                            <input name="ProductSpecifications[@i].Inventory" type="number" value="@spec?.Inventory"
+                                   class="form-control form-control-sm" />
                         </div>
                         <div style="flex: 1; min-width: 80px;">
                             <label class="small">在途庫存</label>
-                            <input name="ProductSpecifications[@i].UnitOnOrder" type="number" class="form-control form-control-sm" />
+                            <input name="ProductSpecifications[@i].UnitOnOrder" type="number" value="@spec?.UnitOnOrder"
+                                   class="form-control form-control-sm" />
                         </div>
                         <div style="flex: 1; min-width: 80px;">
                             <label class="small">再訂量</label>
-                            <input name="ProductSpecifications[@i].ReorderLevel" type="number" class="form-control form-control-sm" />
+                            <input name="ProductSpecifications[@i].ReorderLevel" type="number" value="@spec?.ReorderLevel"
+                                   class="form-control form-control-sm" />
                         </div>
                     </div>
                 }

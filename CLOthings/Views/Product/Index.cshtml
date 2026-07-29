@@ -1,17 +1,23 @@
 @model IEnumerable<CLOthings.ViewModels.ProductViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "商品管理";
 }
 
 <h1>CLO.things商品管理</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary btn-sm me-1" style="width:80px;">新增商品</a>
+    <a asp-action="Create" class="button-74 me-1" role="button">新增商品</a>
 </p>
 <table class="table">
     <thead>
         <tr>
+            <th>
+                <p style="text-align: center;">管理</p>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductImg)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.ProductName)
             </th>
@@ -39,9 +45,21 @@
 @foreach (var item in Model) {
         <tr>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-primary btn-sm me-1" style="width:80px;" >Edit</a> <br/>
-                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-success btn-sm me-1" style="width:80px;">Details</a> <br />
-                    <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-danger btn-sm me-1" style="width:80px;">Delete</a> <br />
+                    <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-outline-primary btn-sm me-1" style="width:80px;" >Edit</a> <br/>
+                    <a asp-action="Details" asp-route-id="@item.ProductId" class="btn btn-outline-success btn-sm me-1" style="width:80px;">Details</a> <br />
+                    <a asp-action="Delete" asp-route-id="@item.ProductId" class="btn btn-outline-danger btn-sm me-1" style="width:80px;">Delete</a> <br />
+                </td>
+
+                <td>
+                    @if (!string.IsNullOrEmpty(item.CoverImgFile))
+                    {
+                        <img src="~/imgs/products/@item.CoverImgFile"" alt="@item.ProductName"
+                             style="width:60px; height:60px; object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">無圖片</span>
+                    }
                 </td>
 
             <td>
@@ -75,3 +93,7 @@
 }
     </tbody>
 </table>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/button.css" asp-append-version="true" />
+}

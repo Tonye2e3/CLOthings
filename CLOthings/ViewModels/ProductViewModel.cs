@@ -10,6 +10,9 @@ namespace CLOthings.ViewModels
         [Display(Name = "商品名稱")]
         public string ProductName { get; set; }
 
+        //index照片
+        public string? CoverImgFile { get; set; }
+
         [Required(ErrorMessage ="此欄位必填")]
         [Display(Name = "供應商")]
         public int? SupplierId { get; set; }
@@ -56,18 +59,18 @@ namespace CLOthings.ViewModels
         [Display(Name = "尺寸")]
         public string? Size { get; set; }
 
-        [Required(ErrorMessage = "此欄位必填")]
+        //[Required(ErrorMessage = "此欄位必填")]
         [Display(Name = "顏色")]
         public string? Color { get; set; }
 
-        [Required(ErrorMessage = "此欄位必填")]
+        //[Required(ErrorMessage = "此欄位必填")]
         [Display(Name = "庫存數量")]
         public int? Inventory { get; set; }
 
         [Display(Name = "在途庫存")]
         public int? UnitOnOrder { get; set; }
 
-        [Required(ErrorMessage = "此欄位必填")]
+        //[Required(ErrorMessage = "此欄位必填")]
         [Display(Name = "再訂量")]
         public int? ReorderLevel { get; set; }
 

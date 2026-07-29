@@ -38,4 +38,5 @@ public partial class Product
     public virtual ICollection<SellerStatistic> SellerStatistics { get; set; } = new List<SellerStatistic>();
 
     public virtual Supplier Supplier { get; set; }
+
 }

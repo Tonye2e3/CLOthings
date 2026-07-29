@@ -62,13 +62,12 @@ public class ProductController : Controller
     {
         _context = context;
     }
-    //測試
+    
     // GET: PRODUCTS
     public async Task<IActionResult> Index()    
     {
-        var product = await _context.Products.ToListAsync(); // 從資料庫撈出原始的Product資料，型別是Product
-
-        var viewModels = product.Select(p => new ProductViewModel //用LINQ的select把每筆Product轉成一筆ProductViewModel，逐欄賦值
+        // 從資料庫撈出原始的Product資料
+        var viewModels = await _context.Products.Select(p => new ProductViewModel //用LINQ的select把每筆Product轉成一筆ProductViewModel，逐欄賦值
         {
             ProductId = p.ProductId,
             ProductName = p.ProductName,
@@ -79,8 +78,13 @@ public class ProductController : Controller
             Status=p.Status,
             SalesStartDate=p.SalesStartDate,
             SalesEndDate=p.SalesEndDate,
+            // 取這件商品的第一張圖,沒有就是 null
+            CoverImgFile = p.ProductImg
+                .OrderBy(img => img.ProductImgId)   // 換成你想排序的欄位
+                .Select(img => img.ProductImgFile)
+                .FirstOrDefault()
 
-        }).ToList();
+        }).ToListAsync();
         
         return View(viewModels);
     }
@@ -143,12 +147,18 @@ public class ProductController : Controller
     {
         if (!ModelState.IsValid)
         {
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            
+            //foreach (var kvp in ModelState)
+            //{
+            //    foreach (var err in kvp.Value.Errors)
+            //    {
+            //        ModelState.AddModelError(string.Empty, $"{kvp.Key}: {err.ErrorMessage}");
+            //    }
+            //}
+
             SetStatusOptions();
             SetSupplierOptions();
             SetCategoryOptions();
-            return View(model);  
+            return View(model);
         }
 
         var product = new Product
@@ -167,14 +177,30 @@ public class ProductController : Controller
         {
             foreach (var spec in model.ProductSpecifications)
             {
+                // 整列都沒填就跳過
+                if (string.IsNullOrWhiteSpace(spec.Size) 
+                    && string.IsNullOrWhiteSpace(spec.Color)
+                    && spec.Inventory == null 
+                    && spec.UnitOnOrder == null 
+                    && spec.ReorderLevel == null)
+                    continue;
+
                 product.ProductSpecifications.Add(new ProductSpecification
                 {
                     Size = spec.Size,
                     Color = spec.Color,
-                    Inventory = spec.Inventory.Value,
+                    Inventory = spec.Inventory ?? 0,
                     UnitOnOrder = spec.UnitOnOrder,
-                    ReorderLevel = spec.ReorderLevel.Value
+                    ReorderLevel = spec.ReorderLevel ?? 0
                 });
+                //product.ProductSpecifications.Add(new ProductSpecification
+                //{
+                //    Size = spec.Size,
+                //    Color = spec.Color,
+                //    Inventory = spec.Inventory.Value,
+                //    UnitOnOrder = spec.UnitOnOrder,
+                //    ReorderLevel = spec.ReorderLevel.Value
+                //});
             }
         }
 
@@ -372,6 +398,8 @@ public class ProductController : Controller
 
         var product = await _context.Products
             .Include(p => p.ProductCategory)
+            .Include(p => p.ProductImg)      // 圖片
+            .Include(p => p.ProductSpecifications)  // 規格
             .FirstOrDefaultAsync(p => p.ProductId == id);
 
         if (product == null) return NotFound();
@@ -386,7 +414,20 @@ public class ProductController : Controller
             Price = product.Price,
             Status = product.Status,
             SalesStartDate = product.SalesStartDate,
-            SalesEndDate = product.SalesEndDate
+            SalesEndDate = product.SalesEndDate,
+            ExistingImages = product.ProductImg.Select(img => new ExistingProductImgViewModel
+            {
+                ProductImgId = img.ProductImgId,
+                ProductImgFile = img.ProductImgFile
+            }).ToList(),
+            ProductSpecifications = product.ProductSpecifications.Select(spec => new ProductSpecificationViewModel
+            {
+                Size = spec.Size,
+                Color = spec.Color,
+                Inventory = spec.Inventory,
+                UnitOnOrder = spec.UnitOnOrder,
+                ReorderLevel = spec.ReorderLevel
+            }).ToList()
         };
 
         return View(viewModel);
@@ -397,9 +438,30 @@ public class ProductController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id)
     {
-        var product = await _context.Products.FindAsync(id);
+        var product = await _context.Products
+            .Include(p => p.ProductImg)
+            .Include(p => p.ProductSpecifications)
+            .Include(p => p.CustomerFavorites)
+            .Include(p => p.PostTaggedProducts)
+            .Include(p => p.SellerStatistics)
+            .FirstOrDefaultAsync(p => p.ProductId == id);
+
         if (product != null)
         {
+            var specIds = product.ProductSpecifications.Select(s => s.ProductSpecificationId).ToList();
+
+            var carts = await _context.Carts.Where(c => specIds.Contains(c.ProductSpecificationId)).ToListAsync();
+            _context.Carts.RemoveRange(carts);
+
+            var orderDetails = await _context.OrderDetails.Where(o => specIds.Contains(o.ProductSpecificationId)).ToListAsync();
+            _context.OrderDetails.RemoveRange(orderDetails);
+
+            _context.ProductSpecifications.RemoveRange(product.ProductSpecifications);
+            _context.ProductImgs.RemoveRange(product.ProductImg);
+            _context.CustomerFavorites.RemoveRange(product.CustomerFavorites);
+            _context.PostTaggedProducts.RemoveRange(product.PostTaggedProducts);
+            _context.SellerStatistics.RemoveRange(product.SellerStatistics);
+
             _context.Products.Remove(product);
         }
 
