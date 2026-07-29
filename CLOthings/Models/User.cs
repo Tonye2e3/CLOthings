@@ -40,7 +40,7 @@ public partial class User
     public DateTime UpdatedAt { get; set; }
 
 
-    [Display(Name = "類型")]
+    [Display(Name = "權限")]
     public UserTypeEnum UserType { get; set; }
 
 
