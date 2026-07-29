@@ -212,9 +212,8 @@ public class CommunityPostController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, string Status, List<int> selectedProductIds)
     {
-        // 從資料庫撈出該筆貼文及其標籤商品
+        // 從資料庫撈出該筆貼文
         var postToUpdate = await _context.CommunityPosts
-            .Include(c => c.PostTaggedProducts)
             .FirstOrDefaultAsync(p => p.CommunityPostId == id);
 
         if (postToUpdate == null)
@@ -224,28 +223,12 @@ public class CommunityPostController : Controller
 
         try
         {
-            // 1. 僅更新管理者權限欄位（狀態切換：public / hidden）
+            // 1. 僅更新管理者權限欄位（狀態切換：public / hidden / check）
             postToUpdate.Status = Status;
 
-            // 2. 更新標籤商品（先清空舊標籤，再建立勾選的新標籤）
-            if (postToUpdate.PostTaggedProducts != null)
-            {
-                _context.PostTaggedProducts.RemoveRange(postToUpdate.PostTaggedProducts);
-            }
+            // ★ 完全不觸動 PostTaggedProducts，原本標籤好的商品就不會被刪除！
 
-            if (selectedProductIds != null && selectedProductIds.Any())
-            {
-                foreach (var productId in selectedProductIds)
-                {
-                    _context.PostTaggedProducts.Add(new PostTaggedProduct
-                    {
-                        CommunityPostId = id,
-                        ProductId = productId
-                    });
-                }
-            }
-
-            // 3. 儲存所有變更
+            // 2. 儲存變更
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
